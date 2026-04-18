@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casa da Coxinha</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Fundo do quadrado arredondado -->
+    <rect x="15" y="15" width="70" height="70" rx="12" fill="#c41e3a"/>
+    <!-- Gota de óleo/tempero -->
+    <ellipse cx="50" cy="40" rx="16" ry="20" fill="#FFA500"/>
+    <circle cx="50" cy="58" r="10" fill="#FFA500"/>
+  </svg>
+  <h1>Casa das</h1>
+  <div class="subtitle">Coxinhas</div>
+  <p>A melhor da cidade!</p>
+</header>
+
+<div class="main-wrapper">
+  <div class="container">
+    <div class="categoria">
+      <h2>Cardápio</h2>
+      <div class="produtos-grid">
+        <div class="produto">
+          <h3>Coxinha Frango</h3>
+          <div class="preco">R$ 5,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-frango', -1)">−</button>
+            <span id="qtd-coxinha-frango">1</span>
+            <button onclick="alterarQtd('coxinha-frango', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha Frango', 5.00, 'coxinha-frango')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha c/ Catupiry</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-catupiry', -1)">−</button>
+            <span id="qtd-coxinha-catupiry">1</span>
+            <button onclick="alterarQtd('coxinha-catupiry', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha c/ Catupiry', 7.00, 'coxinha-catupiry')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha c/ Cheddar</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-cheddar', -1)">−</button>
+            <span id="qtd-coxinha-cheddar">1</span>
+            <button onclick="alterarQtd('coxinha-cheddar', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha c/ Cheddar', 7.00, 'coxinha-cheddar')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha Frango c/ Calabresa</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-calabresa', -1)">−</button>
+            <span id="qtd-coxinha-calabresa">1</span>
+            <button onclick="alterarQtd('coxinha-calabresa', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha Frango c/ Calabresa', 7.00, 'coxinha-calabresa')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha Charque c/ Catupiry</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-charque-catupiry', -1)">−</button>
+            <span id="qtd-coxinha-charque-catupiry">1</span>
+            <button onclick="alterarQtd('coxinha-charque-catupiry', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha Charque c/ Catupiry', 7.00, 'coxinha-charque-catupiry')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha de Charque</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-charque', -1)">−</button>
+            <span id="qtd-coxinha-charque">1</span>
+            <button onclick="alterarQtd('coxinha-charque', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha de Charque', 7.00, 'coxinha-charque')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha Charque c/ Queijo</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-charque-queijo', -1)">−</button>
+            <span id="qtd-coxinha-charque-queijo">1</span>
+            <button onclick="alterarQtd('coxinha-charque-queijo', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha Charque c/ Queijo', 7.00, 'coxinha-charque-queijo')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Coxinha Frango c/ Queijo</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('coxinha-frango-queijo', -1)">−</button>
+            <span id="qtd-coxinha-frango-queijo">1</span>
+            <button onclick="alterarQtd('coxinha-frango-queijo', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Coxinha Frango c/ Queijo', 7.00, 'coxinha-frango-queijo')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Bolinho de Carne</h3>
+          <div class="preco">R$ 5,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('bolinho-carne', -1)">−</button>
+            <span id="qtd-bolinho-carne">1</span>
+            <button onclick="alterarQtd('bolinho-carne', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Bolinho de Carne', 5.00, 'bolinho-carne')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Bolinho de Pizza</h3>
+          <div class="preco">R$ 5,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('bolinho-pizza', -1)">−</button>
+            <span id="qtd-bolinho-pizza">1</span>
+            <button onclick="alterarQtd('bolinho-pizza', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Bolinho de Pizza', 5.00, 'bolinho-pizza')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Enroladinho</h3>
+          <div class="preco">R$ 4,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('enroladinho', -1)">−</button>
+            <span id="qtd-enroladinho">1</span>
+            <button onclick="alterarQtd('enroladinho', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Enroladinho', 4.00, 'enroladinho')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Pastel c/ Dois Sabores</h3>
+          <div class="preco">R$ 9,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('pastel', -1)">−</button>
+            <span id="qtd-pastel">1</span>
+            <button onclick="alterarQtd('pastel', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="abrirModalPastel()">Adicionar ao Carrinho</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="categoria">
+      <h2>Lanches</h2>
+      <div class="produtos-grid">
+        <div class="produto">
+          <h3>X-Burguer</h3>
+          <div class="preco">R$ 8,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('x-burguer', -1)">−</button>
+            <span id="qtd-x-burguer">1</span>
+            <button onclick="alterarQtd('x-burguer', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('X-Burguer', 8.00, 'x-burguer')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Hamburguer</h3>
+          <div class="preco">R$ 7,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('hamburguer', -1)">−</button>
+            <span id="qtd-hamburguer">1</span>
+            <button onclick="alterarQtd('hamburguer', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Hamburguer', 7.00, 'hamburguer')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>X-Tudo</h3>
+          <div class="preco">R$ 12,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('x-tudo', -1)">−</button>
+            <span id="qtd-x-tudo">1</span>
+            <button onclick="alterarQtd('x-tudo', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('X-Tudo', 12.00, 'x-tudo')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Adicionais</h3>
+          <div class="preco">R$ 2,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('adicionais', -1)">−</button>
+            <span id="qtd-adicionais">1</span>
+            <button onclick="alterarQtd('adicionais', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Adicionais', 2.00, 'adicionais')">Adicionar ao Carrinho</button>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <div class="categoria">
+      <h2>Bebidas</h2>
+      <div class="produtos-grid">
+        <div class="produto">
+          <h3>Refrigerante 1L</h3>
+          <p>Coca-Cola, Fanta ou Guaraná</p>
+          <div class="preco">R$ 9,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('refri-1l', -1)">−</button>
+            <span id="qtd-refri-1l">1</span>
+            <button onclick="alterarQtd('refri-1l', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="abrirModalRefrigerante('1L', 9.00)">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto">
+          <h3>Refrigerante Lata</h3>
+          <p>Coca-Cola, Fanta ou Guaraná</p>
+          <div class="preco">R$ 6,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('refri-lata', -1)">−</button>
+            <span id="qtd-refri-lata">1</span>
+            <button onclick="alterarQtd('refri-lata', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="abrirModalRefrigerante('Lata', 6.00)">Adicionar ao Carrinho</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="carrinho">
+    <h2>🛒 Carrinho</h2>
+    <div id="carrinho-itens" class="carrinho-vazio">Nenhum item adicionado</div>
+    <div id="carrinho-resumo" class="carrinho-resumo" hidden>
+      <div class="bairro-selector">
+        <label for="modo-entrega">Modo de Retirada / Entrega:</label>
+        <select id="modo-entrega" onchange="atualizarModoEntrega()">
+          <option value="entrega">Entrega</option>
+          <option value="retirada">Retirar no estabelecimento</option>
+        </select>
+      </div>
+      <div id="bairro-section" class="bairro-selector">
+        <label for="bairro-select">Selecione seu bairro:</label>
+        <select id="bairro-select" onchange="atualizarTaxa()">
+          <option value="">-- Escolha o bairro --</option>
+          <option value="Santo Antônio">Santo Antônio - R$ 5,00</option>
+          <option value="São Pedro">São Pedro - R$ 7,00</option>
+          <option value="Centro">Centro - R$ 6,00</option>
+          <option value="Cohab 1">Cohab 1 - R$ 8,00</option>
+          <option value="Viana e Moura da br">Viana e Moura da BR - R$ 8,00</option>
+          <option value="Viana e Moura da faculdade">Viana e Moura da Faculdade - R$ 12,00</option>
+          <option value="Vila bela">Vila Bela - R$ 15,00</option>
+          <option value="Planalto">Planalto - R$ 10,00</option>
+          <option value="Cavalo morto até a primeira igreja">Cavalo Morto até a Primeira Igreja - R$ 8,00</option>
+          <option value="Cavalo morto depois da primeira igreja">Cavalo Morto Depois da Primeira Igreja - R$ 12,00</option>
+          <option value="Maria Cristina">Maria Cristina - R$ 10,00</option>
+          <option value="Tereza Mendonça">Tereza Mendonça - R$ 12,00</option>
+          <option value="Vila da barragem">Vila da Barragem - R$ 15,00</option>
+          <option value="Batinga">Batinga - R$ 7,00</option>
+        </select>
+      </div>
+      <div id="numero-casa-section" class="bairro-selector">
+        <label for="numero-casa">Número da Casa:</label>
+        <input type="text" id="numero-casa" placeholder="Ex: 123" oninput="atualizarEstadoFinalizar()" />
+      </div>
+      <div id="ponto-referencia-section" class="bairro-selector">
+        <label for="ponto-referencia">Ponto de Referência:</label>
+        <input type="text" id="ponto-referencia" placeholder="Ex: Próximo ao mercado" />
+      </div>
+      <div id="retirada-info" class="bairro-selector" hidden>
+        <label>Retirada no estabelecimento:</label>
+        <div>Cohab 3, Rua 5, nº 28</div>
+        <div><a href="https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7" target="_blank" rel="noreferrer">Ver no mapa</a></div>
+      </div>
+      <div class="bairro-selector">
+        <label for="forma-pagamento">Forma de Pagamento:</label>
+        <select id="forma-pagamento" onchange="atualizarFormaPagamento()">
+          <option value="">-- Escolha a forma de pagamento --</option>
+          <option value="pix">PIX</option>
+          <option value="debito">Cartão de Débito</option>
+          <option value="credito">Cartão de Crédito</option>
+          <option value="especie">Dinheiro em Espécie</option>
+        </select>
+      </div>
+      <div class="resumo-linha">
+        <span>Subtotal:</span>
+        <span id="subtotal">R$ 0,00</span>
+      </div>
+      <div class="resumo-linha">
+        <span>Taxa Entrega:</span>
+        <span id="taxa">R$ 0,00</span>
+      </div>
+      <div class="resumo-total">
+        <div class="total-linha">
+          <span>TOTAL:</span>
+          <span id="total">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+    <div class="aviso-pagamento">
+      <p class="aviso-pagamento-titulo">FORMAS DE PAGAMENTO</p>
+      
+      <div class="metodo-pagamento">
+        <h4>PIX (Recomendado)</h4>
+        <div class="pix-box">
+          <p class="pix-label">Chave PIX</p>
+          <p class="pix-chave">81982116454</p>
+          <p class="pix-titular">Titular: Edmilson José da Silva</p>
+        </div>
+      </div>
+
+      <div class="metodo-pagamento">
+        <h4>Cartão de Crédito/Débito</h4>
+        <p class="metodo-info">No cartão de crédito há acréscimo da maquineta.</p>
+      </div>
+
+      <div class="metodo-pagamento">
+        <h4>Dinheiro em Espécie</h4>
+        <p class="metodo-info">Pagamento na entrega</p>
+      </div>
+
+      <div class="aviso-importante">
+        <div class="aviso-importante-icone">⚠️</div>
+        <p><strong>IMPORTANTE:</strong> Escolha a forma de pagamento antes de finalizar. Se o pagamento for via PIX, ele deve ser feito primeiro e o comprovante precisa ser enviado no WhatsApp para confirmar o pedido. <strong>No cartão de crédito há acréscimo da maquineta.</strong> A entrega só é realizada após a confirmação do pagamento.</p>
+      </div>
+    </div>
+    <button class="finalizar" id="btn-finalizar" onclick="finalizar()" disabled>Finalizar Pedido</button>
+  </div>
+</div>
+
+<div id="modal-refrigerante" class="modal-overlay">
+  <div class="modal">
+    <h2>Escolher Refrigerante</h2>
+    
+    <div class="modal-group">
+      <label>Sabor:</label>
+      <select id="sabor-refri">
+        <option value="">-- Selecione --</option>
+        <option value="Coca-Cola">Coca-Cola</option>
+        <option value="Fanta">Fanta</option>
+        <option value="Guaraná">Guaraná</option>
+      </select>
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn-confirmar" onclick="confirmarRefrigerante()">Adicionar</button>
+      <button class="btn-cancelar" onclick="fecharModalRefrigerante()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-pastel" class="modal-overlay">
+  <div class="modal">
+    <h2>Personalizar Pastel</h2>
+    
+    <div class="modal-group">
+      <label>Primeiro Sabor:</label>
+      <select id="sabor1">
+        <option value="">-- Selecione --</option>
+        <option value="Catupiry">Catupiry</option>
+        <option value="Cheddar">Cheddar</option>
+        <option value="Frango">Frango</option>
+        <option value="Calabresa">Calabresa</option>
+        <option value="Queijo">Queijo</option>
+        <option value="Mussarela">Mussarela</option>
+        <option value="Presunto">Presunto</option>
+        <option value="Charque">Charque</option>
+        <option value="Carne">Carne</option>
+      </select>
+    </div>
+
+    <div class="modal-group">
+      <label>Segundo Sabor:</label>
+      <select id="sabor2">
+        <option value="">-- Selecione --</option>
+        <option value="Catupiry">Catupiry</option>
+        <option value="Cheddar">Cheddar</option>
+        <option value="Frango">Frango</option>
+        <option value="Calabresa">Calabresa</option>
+        <option value="Queijo">Queijo</option>
+        <option value="Mussarela">Mussarela</option>
+        <option value="Presunto">Presunto</option>
+        <option value="Charque">Charque</option>
+        <option value="Carne">Carne</option>
+      </select>
+    </div>
+
+    <div class="modal-group">
+      <label>Complementos:</label>
+      <select id="complementos">
+        <option value="Completo">Completo (com verduras)</option>
+        <option value="Sem verdura">Sem verdura</option>
+        <option value="Sem milho verde">Sem milho verde</option>
+        <option value="Sem ervilha">Sem ervilha</option>
+      </select>
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn-confirmar" onclick="confirmarPastel()">Adicionar</button>
+      <button class="btn-cancelar" onclick="fecharModalPastel()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
