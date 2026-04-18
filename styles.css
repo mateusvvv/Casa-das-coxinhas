@@ -364,6 +364,10 @@ button.adicionar:active {
   transform: scale(1.1);
 }
 
+.mobile-cart-bar {
+  display: none;
+}
+
 .carrinho-resumo {
   background: #0f172a;
   padding: 15px;
@@ -684,6 +688,7 @@ button.finalizar:disabled {
   .main-wrapper {
     padding: 10px;
     gap: 10px;
+    padding-bottom: 90px;
   }
 
   .produtos-grid {
@@ -723,6 +728,7 @@ button.finalizar:disabled {
     box-shadow: none;
     backdrop-filter: none;
     border-width: 1px;
+    scroll-margin-top: 12px;
   }
 
   .item-carrinho,
@@ -744,6 +750,57 @@ button.finalizar:disabled {
   .btn-salvar,
   .btn-voltar {
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .mobile-cart-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    z-index: 1500;
+    border: 1px solid rgba(255, 184, 28, 0.35);
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.96);
+    color: #fff;
+    padding: 12px 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .mobile-cart-bar.is-empty {
+    opacity: 0.92;
+  }
+
+  .mobile-cart-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .mobile-cart-title {
+    color: #FFA500;
+    font-weight: 800;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .mobile-cart-meta {
+    color: #cbd5e1;
+    font-size: 0.9em;
+  }
+
+  .mobile-cart-total {
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.05em;
+    white-space: nowrap;
   }
 }
 

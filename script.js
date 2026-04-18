@@ -323,6 +323,65 @@ function obterFormaPagamentoTexto() {
   return formasPagamento[formaPagamento] || "";
 }
 
+function calcularResumoCarrinho() {
+  const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
+  const taxa = modoEntrega === "retirada" ? 0 : (bairroSelecionado ? taxasPorBairro[bairroSelecionado] : 0);
+
+  return {
+    subtotal,
+    taxa,
+    total: subtotal + taxa,
+    quantidade: carrinho.length
+  };
+}
+
+function criarAtalhoCarrinhoMobile() {
+  if (!document.getElementById("mobile-cart-bar") && document.getElementById("carrinho")) {
+    const bar = document.createElement("button");
+    bar.id = "mobile-cart-bar";
+    bar.className = "mobile-cart-bar";
+    bar.type = "button";
+    bar.onclick = irParaCarrinho;
+    bar.innerHTML = `
+      <span class="mobile-cart-info">
+        <span class="mobile-cart-title">Carrinho</span>
+        <span class="mobile-cart-meta" id="mobile-cart-meta">0 itens</span>
+      </span>
+      <span class="mobile-cart-total" id="mobile-cart-total">R$ 0,00</span>
+    `;
+    document.body.appendChild(bar);
+  }
+}
+
+function atualizarAtalhoCarrinhoMobile() {
+  const bar = document.getElementById("mobile-cart-bar");
+  const meta = document.getElementById("mobile-cart-meta");
+  const total = document.getElementById("mobile-cart-total");
+
+  if (!bar || !meta || !total) {
+    return;
+  }
+
+  const resumo = calcularResumoCarrinho();
+  const temItens = resumo.quantidade > 0;
+
+  meta.innerText = `${resumo.quantidade} ${resumo.quantidade === 1 ? "item" : "itens"}`;
+  total.innerText = formatarMoeda(resumo.total);
+  bar.classList.toggle("is-empty", !temItens);
+}
+
+function irParaCarrinho() {
+  const carrinhoElemento = document.getElementById("carrinho");
+  if (!carrinhoElemento) {
+    return;
+  }
+
+  carrinhoElemento.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
 function render() {
   let container = document.getElementById("carrinho-itens");
   let resumo = document.getElementById("carrinho-resumo");
@@ -333,6 +392,7 @@ function render() {
   if (carrinho.length === 0) {
     container.innerHTML = '<div class="carrinho-vazio">Nenhum item adicionado</div>';
     resumo.hidden = true;
+    atualizarAtalhoCarrinhoMobile();
     atualizarEstadoFinalizar();
     return;
   }
@@ -370,6 +430,7 @@ function render() {
   document.getElementById("taxa").innerText = formatarMoeda(taxa);
   document.getElementById("total").innerText = formatarMoeda(total);
   resumo.hidden = false;
+  atualizarAtalhoCarrinhoMobile();
   atualizarEstadoFinalizar();
 }
 
@@ -864,6 +925,8 @@ function logoutAdmin() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+  criarAtalhoCarrinhoMobile();
+  atualizarAtalhoCarrinhoMobile();
   carregarAvailability();
 
   if (document.getElementById("admin-login-box")) {
