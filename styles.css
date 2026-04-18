@@ -44,9 +44,25 @@ header {
 }
 
 .header-logo {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 15px;
+  max-width: 260px;
+  width: auto;
+  height: auto;
+  margin: 0 auto 22px;
+  display: block;
+  object-fit: contain;
+  image-rendering: auto;
+  filter: saturate(1.4) contrast(1.2) brightness(1.1);
+  border-radius: 26px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 28px 55px rgba(0, 0, 0, 0.18);
+  transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-logo:hover {
+  transform: translateY(-2px) scale(1.04);
+  filter: saturate(1.45) contrast(1.25) brightness(1.12);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.22);
 }
 
 header h1 {
