@@ -20,13 +20,10 @@ let bairroSelecionado = "";
 let modoEntrega = "entrega";
 let refriTemp = { tamanho: "", preco: 0, id: "" };
 let formaPagamento = "";
+let availabilityUnsubscribe = null;
+let adminAutenticado = false;
 
-const ADMIN_CREDENTIALS = {
-  email: "edmilsonjosedasilva14@gmail.com",
-  senha: "24101981"
-};
-
-const ADMIN_SESSION_KEY = "adminAuthenticated";
+const ADMIN_EMAIL = "edmilsonjosedasilva14@gmail.com";
 const AVAILABILITY_STORAGE_KEY = "produtosAvailability";
 
 const produtosRegulares = [
@@ -72,6 +69,53 @@ function encontrarProdutoPorId(id) {
 function produtoEstaDisponivel(id) {
   const produto = encontrarProdutoPorId(id);
   return produto ? produto.disponivel : true;
+}
+
+function coletarAvailabilityData() {
+  const data = {};
+
+  obterTodosProdutos().forEach((produto) => {
+    data[produto.id] = !!produto.disponivel;
+  });
+
+  return data;
+}
+
+function aplicarAvailabilityData(data) {
+  if (!data) {
+    data = coletarAvailabilityData();
+  }
+
+  produtosRegulares.forEach((produto) => {
+    if (data[produto.id] !== undefined) {
+      produto.disponivel = !!data[produto.id];
+    }
+  });
+
+  produtosEventos.oleo.forEach((produto) => {
+    if (data[produto.id] !== undefined) {
+      produto.disponivel = !!data[produto.id];
+      if (!produto.disponivel) {
+        produto.selecionado = false;
+      }
+    }
+  });
+
+  produtosEventos.forno.forEach((produto) => {
+    if (data[produto.id] !== undefined) {
+      produto.disponivel = !!data[produto.id];
+      if (!produto.disponivel) {
+        produto.selecionado = false;
+      }
+    }
+  });
+
+  produtosEventos.salgadosSelecionadosOleo = produtosEventos.oleo.filter((item) => item.selecionado).length;
+  produtosEventos.salgadosSelecionadosForno = produtosEventos.forno.filter((item) => item.selecionado).length;
+
+  aplicarDisponibilidadeCardapioRegular();
+  atualizarPaginaEventos();
+  atualizarPainelAdminPage();
 }
 
 function abrirModalRefrigerante(tamanho, preco, id) {
@@ -508,25 +552,34 @@ function atualizarPainelAdminPage() {
   `).join("");
 }
 
-// Carregar dados do localStorage
-function carregarAvailability() {
-  const saved = localStorage.getItem(AVAILABILITY_STORAGE_KEY);
-  if (saved) {
-    const data = JSON.parse(saved);
-    produtosRegulares.forEach(p => {
-      if (data[p.id] !== undefined) p.disponivel = data[p.id];
-    });
-    produtosEventos.oleo.forEach(p => {
-      if (data[p.id] !== undefined) p.disponivel = data[p.id];
-    });
-    produtosEventos.forno.forEach(p => {
-      if (data[p.id] !== undefined) p.disponivel = data[p.id];
-    });
+async function carregarAvailability() {
+  if (window.firebaseService) {
+    try {
+      const data = await window.firebaseService.loadAvailability();
+      aplicarAvailabilityData(data || coletarAvailabilityData());
+
+      if (!availabilityUnsubscribe) {
+        availabilityUnsubscribe = await window.firebaseService.subscribeAvailability((snapshotData) => {
+          aplicarAvailabilityData(snapshotData || coletarAvailabilityData());
+        });
+      }
+      return;
+    } catch (error) {
+      console.error("Erro ao carregar disponibilidade do Firebase:", error);
+    }
   }
 
-  aplicarDisponibilidadeCardapioRegular();
-  atualizarPaginaEventos();
-  atualizarPainelAdminPage();
+  const saved = localStorage.getItem(AVAILABILITY_STORAGE_KEY);
+  if (saved) {
+    try {
+      aplicarAvailabilityData(JSON.parse(saved));
+      return;
+    } catch (error) {
+      console.error("Erro ao ler disponibilidade local:", error);
+    }
+  }
+
+  aplicarAvailabilityData(coletarAvailabilityData());
 }
 
 function irParaPagina(pagina, botao) {
@@ -688,7 +741,7 @@ function finalizarEventos() {
   finalizar();
 }
 
-function salvarAvailability() {
+async function salvarAvailability() {
   const data = {};
 
   produtosRegulares.forEach((produto) => {
@@ -709,14 +762,26 @@ function salvarAvailability() {
     produto.disponivel = data[produto.id];
   });
 
+  aplicarAvailabilityData(data);
+
+  if (window.firebaseService) {
+    try {
+      await window.firebaseService.saveAvailability(data);
+      alert("Disponibilidade dos produtos salva com sucesso!");
+      return;
+    } catch (error) {
+      console.error("Erro ao salvar disponibilidade no Firebase:", error);
+      alert("Não foi possível salvar no Firebase. Verifique a configuração e tente novamente.");
+      return;
+    }
+  }
+
   localStorage.setItem(AVAILABILITY_STORAGE_KEY, JSON.stringify(data));
-  aplicarDisponibilidadeCardapioRegular();
-  atualizarPaginaEventos();
-  alert("Disponibilidade dos produtos salva com sucesso!");
+  alert("Disponibilidade dos produtos salva localmente com sucesso!");
 }
 
 function adminEstaAutenticado() {
-  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+  return adminAutenticado;
 }
 
 function atualizarVisibilidadePainelAdmin() {
@@ -732,6 +797,7 @@ function atualizarVisibilidadePainelAdmin() {
   painelBox.hidden = !autenticado;
 
   if (autenticado) {
+    atualizarPainelAdminPage();
     carregarAvailability();
   }
 }
@@ -752,27 +818,62 @@ function autenticarAdmin(event) {
   const email = emailInput.value.trim();
   const senha = senhaInput.value;
 
-  if (email === ADMIN_CREDENTIALS.email && senha === ADMIN_CREDENTIALS.senha) {
-    sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
-    erro.hidden = true;
-    senhaInput.value = "";
-    atualizarVisibilidadePainelAdmin();
+  if (email !== ADMIN_EMAIL) {
+    erro.textContent = "Somente o administrador autorizado pode acessar este painel.";
+    erro.hidden = false;
     return false;
   }
 
-  erro.hidden = false;
+  if (!window.firebaseService) {
+    erro.textContent = "Firebase não foi carregado. Verifique a configuração e tente novamente.";
+    erro.hidden = false;
+    return false;
+  }
+
+  window.firebaseService.loginAdmin(email, senha)
+    .then((user) => {
+      if (!user || user.email !== ADMIN_EMAIL) {
+        erro.textContent = "Usuário sem permissão para este painel.";
+        erro.hidden = false;
+        window.firebaseService.logoutAdmin();
+        return;
+      }
+
+      erro.hidden = true;
+      senhaInput.value = "";
+    })
+    .catch((authError) => {
+      console.error("Erro ao autenticar admin:", authError);
+      erro.textContent = "Usuário ou senha inválidos.";
+      erro.hidden = false;
+    });
+
   return false;
 }
 
 function logoutAdmin() {
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  atualizarVisibilidadePainelAdmin();
+  if (!window.firebaseService) {
+    adminAutenticado = false;
+    atualizarVisibilidadePainelAdmin();
+    return;
+  }
+
+  window.firebaseService.logoutAdmin().catch((error) => {
+    console.error("Erro ao sair do admin:", error);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", function() {
   carregarAvailability();
 
   if (document.getElementById("admin-login-box")) {
-    atualizarVisibilidadePainelAdmin();
+    if (window.firebaseService) {
+      window.firebaseService.onAdminAuthChanged((user) => {
+        adminAutenticado = !!(user && user.email === ADMIN_EMAIL);
+        atualizarVisibilidadePainelAdmin();
+      });
+    } else {
+      atualizarVisibilidadePainelAdmin();
+    }
   }
 });
