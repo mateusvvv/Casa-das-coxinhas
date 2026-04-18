@@ -639,6 +639,20 @@ button.finalizar:disabled {
   background: #475569;
 }
 
+@media (hover: none), (pointer: coarse) {
+  .nav-tab:hover,
+  .produto:hover,
+  button.adicionar:hover,
+  button.finalizar:hover:not(:disabled),
+  .item-remover:hover,
+  .btn-salvar:hover,
+  .btn-voltar:hover,
+  .modal-buttons .btn-confirmar:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .main-wrapper {
     flex-direction: column;
@@ -676,8 +690,60 @@ button.finalizar:disabled {
     grid-template-columns: 1fr;
   }
 
+  .header-top {
+    padding: 22px 14px;
+  }
+
+  .horario-funcionamento {
+    padding: 12px 14px;
+  }
+
+  .categoria {
+    margin-bottom: 24px;
+    content-visibility: auto;
+    contain-intrinsic-size: 600px;
+  }
+
+  .produto {
+    padding: 16px;
+    backdrop-filter: none;
+    box-shadow: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    content-visibility: auto;
+    contain-intrinsic-size: 260px;
+  }
+
+  .produto:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
   #carrinho {
-    padding: 15px;
+    padding: 16px;
+    box-shadow: none;
+    backdrop-filter: none;
+    border-width: 1px;
+  }
+
+  .item-carrinho,
+  .aviso-pagamento,
+  .carrinho-resumo,
+  .painel-produto,
+  .painel-admin-page {
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .horario-icon {
+    animation: none;
+  }
+
+  .nav-tab,
+  button.adicionar,
+  button.finalizar,
+  .btn-salvar,
+  .btn-voltar {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 }
 
