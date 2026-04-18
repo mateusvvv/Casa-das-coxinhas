@@ -18,8 +18,37 @@ let taxasPorBairro = {
 };
 let bairroSelecionado = "";
 let modoEntrega = "entrega";
-let refriTemp = { tamanho: "", preco: 0 };
+let refriTemp = { tamanho: "", preco: 0, id: "" };
 let formaPagamento = "";
+
+const ADMIN_CREDENTIALS = {
+  email: "edmilsonjosedasilva14@gmail.com",
+  senha: "24101981"
+};
+
+const ADMIN_SESSION_KEY = "adminAuthenticated";
+const AVAILABILITY_STORAGE_KEY = "produtosAvailability";
+
+const produtosRegulares = [
+  { id: "coxinha-frango", nome: "Coxinha Frango", disponivel: true },
+  { id: "coxinha-catupiry", nome: "Coxinha c/ Catupiry", disponivel: true },
+  { id: "coxinha-cheddar", nome: "Coxinha c/ Cheddar", disponivel: true },
+  { id: "coxinha-calabresa", nome: "Coxinha Frango c/ Calabresa", disponivel: true },
+  { id: "coxinha-charque-catupiry", nome: "Coxinha Charque c/ Catupiry", disponivel: true },
+  { id: "coxinha-charque", nome: "Coxinha de Charque", disponivel: true },
+  { id: "coxinha-charque-queijo", nome: "Coxinha Charque c/ Queijo", disponivel: true },
+  { id: "coxinha-frango-queijo", nome: "Coxinha Frango c/ Queijo", disponivel: true },
+  { id: "bolinho-carne", nome: "Bolinho de Carne", disponivel: true },
+  { id: "bolinho-pizza", nome: "Bolinho de Pizza", disponivel: true },
+  { id: "enroladinho", nome: "Enroladinho", disponivel: true },
+  { id: "pastel", nome: "Pastel c/ Dois Sabores", disponivel: true },
+  { id: "x-burguer", nome: "X-Burguer", disponivel: true },
+  { id: "hamburguer", nome: "Hamburguer", disponivel: true },
+  { id: "x-tudo", nome: "X-Tudo", disponivel: true },
+  { id: "adicionais", nome: "Adicionais", disponivel: true },
+  { id: "refri-1l", nome: "Refrigerante 1L", disponivel: true },
+  { id: "refri-lata", nome: "Refrigerante Lata", disponivel: true }
+];
 
 function formatarMoeda(valor) {
   return valor.toLocaleString("pt-BR", {
@@ -28,8 +57,30 @@ function formatarMoeda(valor) {
   });
 }
 
-function abrirModalRefrigerante(tamanho, preco) {
-  refriTemp = { tamanho, preco };
+function obterTodosProdutos() {
+  return [
+    ...produtosRegulares,
+    ...produtosEventos.oleo,
+    ...produtosEventos.forno
+  ];
+}
+
+function encontrarProdutoPorId(id) {
+  return obterTodosProdutos().find((produto) => produto.id === id);
+}
+
+function produtoEstaDisponivel(id) {
+  const produto = encontrarProdutoPorId(id);
+  return produto ? produto.disponivel : true;
+}
+
+function abrirModalRefrigerante(tamanho, preco, id) {
+  if (!produtoEstaDisponivel(id)) {
+    alert("Este item está esgotado no momento.");
+    return;
+  }
+
+  refriTemp = { tamanho, preco, id };
   document.getElementById("modal-refrigerante").classList.add("active");
   document.getElementById("sabor-refri").value = "";
 }
@@ -44,6 +95,12 @@ function confirmarRefrigerante() {
 
   if (!sabor) {
     alert("Por favor, selecione um sabor!");
+    return;
+  }
+
+  if (!produtoEstaDisponivel(refriTemp.id)) {
+    alert("Este item está esgotado no momento.");
+    fecharModalRefrigerante();
     return;
   }
 
@@ -67,6 +124,11 @@ function confirmarRefrigerante() {
 }
 
 function abrirModalPastel() {
+  if (!produtoEstaDisponivel("pastel")) {
+    alert("Este item está esgotado no momento.");
+    return;
+  }
+
   document.getElementById("modal-pastel").classList.add("active");
 }
 
@@ -84,6 +146,12 @@ function confirmarPastel() {
 
   if (!sabor1 || !sabor2) {
     alert("Por favor, selecione os dois sabores!");
+    return;
+  }
+
+  if (!produtoEstaDisponivel("pastel")) {
+    alert("Este item está esgotado no momento.");
+    fecharModalPastel();
     return;
   }
 
@@ -106,40 +174,65 @@ function confirmarPastel() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("modal-refrigerante").addEventListener("click", function(e) {
-    if (e.target === this) {
-      fecharModalRefrigerante();
-    }
-  });
+  const modalRefrigerante = document.getElementById("modal-refrigerante");
+  const modalPastel = document.getElementById("modal-pastel");
 
-  document.getElementById("modal-pastel").addEventListener("click", function(e) {
-    if (e.target === this) {
-      fecharModalPastel();
-    }
-  });
+  if (modalRefrigerante) {
+    modalRefrigerante.addEventListener("click", function(e) {
+      if (e.target === this) {
+        fecharModalRefrigerante();
+      }
+    });
+  }
+
+  if (modalPastel) {
+    modalPastel.addEventListener("click", function(e) {
+      if (e.target === this) {
+        fecharModalPastel();
+      }
+    });
+  }
 });
 
 function alterarQtd(id, valor) {
+  if (!produtoEstaDisponivel(id)) {
+    return;
+  }
+
   quantidades[id] = (quantidades[id] || 1) + valor;
   if (quantidades[id] < 1) {
     quantidades[id] = 1;
   }
-  document.getElementById(`qtd-${id}`).innerText = quantidades[id];
+  const contador = document.getElementById(`qtd-${id}`);
+  if (contador) {
+    contador.innerText = quantidades[id];
+  }
 }
 
 function add(nome, preco, id) {
+  if (!produtoEstaDisponivel(id)) {
+    alert("Este item está esgotado no momento.");
+    return;
+  }
+
   const qtd = quantidades[id] || 1;
   for (let i = 0; i < qtd; i++) {
     carrinho.push({ nome, preco });
   }
   quantidades[id] = 1;
-  document.getElementById(`qtd-${id}`).innerText = 1;
+  const contador = document.getElementById(`qtd-${id}`);
+  if (contador) {
+    contador.innerText = 1;
+  }
   render();
 }
 
 function atualizarEstadoFinalizar() {
   const numeroCasa = document.getElementById("numero-casa");
   const botaoFinalizar = document.getElementById("btn-finalizar");
+  if (!botaoFinalizar) {
+    return;
+  }
   const numeroPreenchido = numeroCasa ? numeroCasa.value.trim() !== "" : false;
 
   const enderecoValido = modoEntrega === "retirada" || (modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido);
@@ -189,6 +282,9 @@ function obterFormaPagamentoTexto() {
 function render() {
   let container = document.getElementById("carrinho-itens");
   let resumo = document.getElementById("carrinho-resumo");
+  if (!container || !resumo) {
+    return;
+  }
 
   if (carrinho.length === 0) {
     container.innerHTML = '<div class="carrinho-vazio">Nenhum item adicionado</div>';
@@ -359,11 +455,67 @@ const produtosEventos = {
   salgadosSelecionadosForno: 0
 };
 
+function aplicarDisponibilidadeCardapioRegular() {
+  const cards = document.querySelectorAll("[data-product-id]");
+
+  cards.forEach((card) => {
+    const id = card.dataset.productId;
+    const disponivel = produtoEstaDisponivel(id);
+
+    card.classList.toggle("indisponivel", !disponivel);
+
+    const botoesQuantidade = card.querySelectorAll(".quantidade-selector button");
+    botoesQuantidade.forEach((botao) => {
+      botao.disabled = !disponivel;
+    });
+
+    const botaoAdicionar = card.querySelector("button.adicionar");
+    if (botaoAdicionar) {
+      botaoAdicionar.disabled = !disponivel;
+      botaoAdicionar.textContent = disponivel ? "Adicionar ao Carrinho" : "Item Esgotado";
+    }
+  });
+}
+
+function atualizarPainelAdminPage() {
+  const painelCardapio = document.getElementById("painel-cardapio-regular");
+  const painelOleo = document.getElementById("painel-eventos-oleo");
+  const painelForno = document.getElementById("painel-eventos-forno");
+
+  if (!painelCardapio || !painelOleo || !painelForno) {
+    return;
+  }
+
+  painelCardapio.innerHTML = produtosRegulares.map((produto) => `
+    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
+      <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
+      <label for="check-${produto.id}">${produto.nome}</label>
+    </div>
+  `).join("");
+
+  painelOleo.innerHTML = produtosEventos.oleo.map((produto) => `
+    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
+      <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
+      <label for="check-${produto.id}">${produto.nome}</label>
+    </div>
+  `).join("");
+
+  painelForno.innerHTML = produtosEventos.forno.map((produto) => `
+    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
+      <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
+      <label for="check-${produto.id}">${produto.nome}</label>
+    </div>
+  `).join("");
+}
+
 // Carregar dados do localStorage
 function carregarAvailability() {
-  const saved = localStorage.getItem('produtosAvailability');
+  const saved = localStorage.getItem(AVAILABILITY_STORAGE_KEY);
   if (saved) {
     const data = JSON.parse(saved);
+    produtosRegulares.forEach(p => {
+      if (data[p.id] !== undefined) p.disponivel = data[p.id];
+    });
     produtosEventos.oleo.forEach(p => {
       if (data[p.id] !== undefined) p.disponivel = data[p.id];
     });
@@ -371,5 +523,256 @@ function carregarAvailability() {
       if (data[p.id] !== undefined) p.disponivel = data[p.id];
     });
   }
+
+  aplicarDisponibilidadeCardapioRegular();
+  atualizarPaginaEventos();
+  atualizarPainelAdminPage();
+}
+
+function irParaPagina(pagina, botao) {
+  const paginas = document.querySelectorAll(".pagina-conteudo");
+  paginas.forEach((item) => item.classList.remove("active"));
+
+  const paginaAtiva = document.getElementById(`pagina-${pagina}`);
+  if (paginaAtiva) {
+    paginaAtiva.classList.add("active");
+  }
+
+  if (botao) {
+    document.querySelectorAll(".nav-tab").forEach((tab) => tab.classList.remove("active"));
+    botao.classList.add("active");
+  }
+}
+
+function obterConfiguracaoEvento(tipo) {
+  if (tipo === "oleo") {
+    return {
+      titulo: "Cardápio de Eventos - Óleo",
+      preco: 45.00,
+      limite: 3,
+      quantidade: 100
+    };
+  }
+
+  return {
+    titulo: "Cardápio de Eventos - Forno",
+    preco: 50.00,
+    limite: 2,
+    quantidade: 100
+  };
+}
+
+function atualizarContadorEventos() {
+  const contadorOleo = document.getElementById("contador-oleo");
+  const contadorForno = document.getElementById("contador-forno");
+
+  if (contadorOleo) {
+    contadorOleo.innerText = `Selecionados: ${produtosEventos.salgadosSelecionadosOleo}/3`;
+    contadorOleo.classList.toggle("completo", produtosEventos.salgadosSelecionadosOleo === 3);
+  }
+
+  if (contadorForno) {
+    contadorForno.innerText = `Selecionados: ${produtosEventos.salgadosSelecionadosForno}/2`;
+    contadorForno.classList.toggle("completo", produtosEventos.salgadosSelecionadosForno === 2);
+  }
+}
+
+function criarCardEvento(produto, tipo) {
+  const bloqueado = !produto.disponivel;
+
+  return `
+    <div class="produto ${produto.selecionado ? "selecionado" : ""} ${bloqueado ? "indisponivel" : ""}">
+      <h3>${produto.nome}</h3>
+      <p>${bloqueado ? "Item esgotado no momento" : "Disponível para compor seu cardápio de 100 unidades"}</p>
+      <label class="checkbox-salgado">
+        <input
+          type="checkbox"
+          ${produto.selecionado ? "checked" : ""}
+          ${bloqueado ? "disabled" : ""}
+          onchange="toggleSelecaoEvento('${tipo}', '${produto.id}')"
+        >
+        <span class="checkbox-custom"></span>
+        <span>${bloqueado ? "Indisponível" : "Selecionar este sabor"}</span>
+      </label>
+    </div>
+  `;
+}
+
+function atualizarPaginaEventos() {
+  const gridOleo = document.getElementById("grid-oleo");
+  const gridForno = document.getElementById("grid-forno");
+
+  if (!gridOleo || !gridForno) {
+    return;
+  }
+
+  gridOleo.innerHTML = produtosEventos.oleo.map((produto) => criarCardEvento(produto, "oleo")).join("");
+  gridForno.innerHTML = produtosEventos.forno.map((produto) => criarCardEvento(produto, "forno")).join("");
+
+  atualizarContadorEventos();
+}
+
+function toggleSelecaoEvento(tipo, id) {
+  const lista = produtosEventos[tipo];
+  const produto = lista.find((item) => item.id === id);
+
+  if (!produto || !produto.disponivel) {
+    return;
+  }
+
+  const config = obterConfiguracaoEvento(tipo);
+  const chaveContador = tipo === "oleo" ? "salgadosSelecionadosOleo" : "salgadosSelecionadosForno";
+  const totalSelecionado = produtosEventos[chaveContador];
+
+  if (!produto.selecionado && totalSelecionado >= config.limite) {
+    alert(`Você pode selecionar apenas ${config.limite} tipos no cardápio ${tipo === "oleo" ? "de óleo" : "de forno"}.`);
+    atualizarPaginaEventos();
+    return;
+  }
+
+  produto.selecionado = !produto.selecionado;
+  produtosEventos[chaveContador] = lista.filter((item) => item.selecionado).length;
   atualizarPaginaEventos();
 }
+
+function obterDescricaoComboEvento(tipo) {
+  const config = obterConfiguracaoEvento(tipo);
+  const selecionados = produtosEventos[tipo]
+    .filter((item) => item.selecionado)
+    .map((item) => item.nome);
+
+  return `${config.titulo} - ${config.quantidade} unidades (${selecionados.join(", ")})`;
+}
+
+function limparSelecaoEventos(tipo) {
+  produtosEventos[tipo].forEach((item) => {
+    item.selecionado = false;
+  });
+
+  if (tipo === "oleo") {
+    produtosEventos.salgadosSelecionadosOleo = 0;
+  } else {
+    produtosEventos.salgadosSelecionadosForno = 0;
+  }
+}
+
+function adicionarComboEvento(tipo) {
+  const config = obterConfiguracaoEvento(tipo);
+  const selecionados = produtosEventos[tipo].filter((item) => item.selecionado);
+
+  if (selecionados.length !== config.limite) {
+    alert(`Selecione exatamente ${config.limite} tipos para adicionar o cardápio ${tipo === "oleo" ? "de óleo" : "de forno"} ao carrinho.`);
+    return;
+  }
+
+  carrinho.push({
+    nome: obterDescricaoComboEvento(tipo),
+    preco: config.preco
+  });
+
+  limparSelecaoEventos(tipo);
+  atualizarPaginaEventos();
+  render();
+}
+
+function finalizarEventos() {
+  const selecaoPendente =
+    produtosEventos.oleo.some((item) => item.selecionado) ||
+    produtosEventos.forno.some((item) => item.selecionado);
+
+  if (selecaoPendente && carrinho.length === 0) {
+    alert("Adicione primeiro o cardápio de eventos ao carrinho antes de finalizar o pedido.");
+    return;
+  }
+
+  finalizar();
+}
+
+function salvarAvailability() {
+  const data = {};
+
+  produtosRegulares.forEach((produto) => {
+    const checkbox = document.getElementById(`check-${produto.id}`);
+    data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
+    produto.disponivel = data[produto.id];
+  });
+
+  produtosEventos.oleo.forEach((produto) => {
+    const checkbox = document.getElementById(`check-${produto.id}`);
+    data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
+    produto.disponivel = data[produto.id];
+  });
+
+  produtosEventos.forno.forEach((produto) => {
+    const checkbox = document.getElementById(`check-${produto.id}`);
+    data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
+    produto.disponivel = data[produto.id];
+  });
+
+  localStorage.setItem(AVAILABILITY_STORAGE_KEY, JSON.stringify(data));
+  aplicarDisponibilidadeCardapioRegular();
+  atualizarPaginaEventos();
+  alert("Disponibilidade dos produtos salva com sucesso!");
+}
+
+function adminEstaAutenticado() {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+}
+
+function atualizarVisibilidadePainelAdmin() {
+  const loginBox = document.getElementById("admin-login-box");
+  const painelBox = document.getElementById("admin-panel-box");
+
+  if (!loginBox || !painelBox) {
+    return;
+  }
+
+  const autenticado = adminEstaAutenticado();
+  loginBox.hidden = autenticado;
+  painelBox.hidden = !autenticado;
+
+  if (autenticado) {
+    carregarAvailability();
+  }
+}
+
+function autenticarAdmin(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
+  const emailInput = document.getElementById("admin-email");
+  const senhaInput = document.getElementById("admin-senha");
+  const erro = document.getElementById("admin-login-erro");
+
+  if (!emailInput || !senhaInput || !erro) {
+    return false;
+  }
+
+  const email = emailInput.value.trim();
+  const senha = senhaInput.value;
+
+  if (email === ADMIN_CREDENTIALS.email && senha === ADMIN_CREDENTIALS.senha) {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+    erro.hidden = true;
+    senhaInput.value = "";
+    atualizarVisibilidadePainelAdmin();
+    return false;
+  }
+
+  erro.hidden = false;
+  return false;
+}
+
+function logoutAdmin() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  atualizarVisibilidadePainelAdmin();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  carregarAvailability();
+
+  if (document.getElementById("admin-login-box")) {
+    atualizarVisibilidadePainelAdmin();
+  }
+});

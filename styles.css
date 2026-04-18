@@ -249,6 +249,14 @@ header p {
   color: #fff;
 }
 
+.quantidade-selector button:disabled,
+button.adicionar:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .quantidade-selector span {
   flex: 1;
   text-align: center;
@@ -1034,6 +1042,43 @@ button.finalizar:disabled {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 15px;
+}
+
+.admin-login-form {
+  max-width: 460px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-login-form label {
+  color: #FFA500;
+  font-weight: bold;
+}
+
+.admin-login-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #334155;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 1em;
+}
+
+.admin-login-form input:focus {
+  outline: none;
+  border-color: #c41e3a;
+  box-shadow: 0 0 0 2px rgba(196, 30, 58, 0.2);
+}
+
+.admin-login-erro {
+  color: #fca5a5;
+  background: rgba(196, 30, 58, 0.15);
+  border: 1px solid #c41e3a;
+  border-radius: 8px;
+  padding: 10px 12px;
 }
 
 @media (max-width: 768px) {
