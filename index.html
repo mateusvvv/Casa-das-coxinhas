@@ -5,23 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Casa da Coxinha</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .produto.indisponivel {
+      opacity: 0.6;
+      border-color: #666;
+      filter: grayscale(0.5);
+    }
+    
+    .produto.indisponivel h3::after {
+      content: " (ESGOTADO)";
+      color: #c41e3a;
+      font-weight: bold;
+      font-size: 0.8em;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <!-- Fundo do quadrado arredondado -->
-    <rect x="15" y="15" width="70" height="70" rx="12" fill="#c41e3a"/>
-    <!-- Gota de óleo/tempero -->
-    <ellipse cx="50" cy="40" rx="16" ry="20" fill="#FFA500"/>
-    <circle cx="50" cy="58" r="10" fill="#FFA500"/>
-  </svg>
-  <h1>Casa das</h1>
-  <div class="subtitle">Coxinhas</div>
-  <p>A melhor da cidade!</p>
+  <div class="header-top">
+    <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <!-- Fundo do quadrado arredondado -->
+      <rect x="15" y="15" width="70" height="70" rx="12" fill="#c41e3a"/>
+      <!-- Gota de óleo/tempero -->
+      <ellipse cx="50" cy="40" rx="16" ry="20" fill="#FFA500"/>
+      <circle cx="50" cy="58" r="10" fill="#FFA500"/>
+    </svg>
+    <h1>Casa das</h1>
+    <div class="subtitle">Coxinhas</div>
+    <p>A melhor da cidade!</p>
+  </div>
+  
+  <div class="horario-funcionamento">
+    <div class="horario-content">
+      <span class="horario-icon">🕖</span>
+      <span class="horario-texto">
+        <strong>Estamos Abertos!</strong><br>
+        Quarta a Domingo | 18h às 23h
+      </span>
+    </div>
+  </div>
+  
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="irParaPagina('cardapio', this)">
+      🍗 Cardápio Regular
+    </button>
+    <button class="nav-tab" onclick="window.location.href='eventos.html'">
+      🎉 Cardápio de Eventos
+    </button>
+    <button class="nav-tab" onclick="window.location.href='admin.html'">
+      ⚙️ Painel Admin
+    </button>
+  </nav>
 </header>
 
+<!-- PAINEL DE ADMINISTRAÇÃO -->
+<!-- Movido para admin.html -->
+
 <div class="main-wrapper">
+  <!-- PÁGINA CARDÁPIO REGULAR -->
+  <div id="pagina-cardapio" class="pagina-conteudo active">
   <div class="container">
     <div class="categoria">
       <h2>Cardápio</h2>
@@ -239,6 +282,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <div id="carrinho">

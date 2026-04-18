@@ -331,3 +331,45 @@ function finalizar() {
 
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));
 }
+
+// ========== NOVOS SISTEMAS ==========
+
+// Dados de Eventos
+const produtosEventos = {
+  oleo: [
+    { id: 'coxinha', nome: 'Coxinha', disponivel: true, selecionado: false },
+    { id: 'risole', nome: 'Risole', disponivel: true, selecionado: false },
+    { id: 'bolinho-carne-ev', nome: 'Bolinho de Carne', disponivel: true, selecionado: false },
+    { id: 'bolinho-pizza-ev', nome: 'Bolinho de Pizza', disponivel: true, selecionado: false },
+    { id: 'bolinha-queijo', nome: 'Bolinha de Queijo', disponivel: true, selecionado: false },
+    { id: 'pastelzinho', nome: 'Pastelzinho', disponivel: true, selecionado: false },
+    { id: 'enroladinho-ev', nome: 'Enroladinho', disponivel: true, selecionado: false },
+    { id: 'pastel-pernambucano', nome: 'Pastel Pernambucano', disponivel: true, selecionado: false }
+  ],
+  forno: [
+    { id: 'pastelzinho-forno', nome: 'Pastelzinho', disponivel: true, selecionado: false },
+    { id: 'bolinha-queijo-forno', nome: 'Bolinha de Queijo', disponivel: true, selecionado: false },
+    { id: 'tortilete', nome: 'Tortilete', disponivel: true, selecionado: false },
+    { id: 'canudinho', nome: 'Canudinho', disponivel: true, selecionado: false },
+    { id: 'empada', nome: 'Empada', disponivel: true, selecionado: false },
+    { id: 'enroladinho-forno', nome: 'Enroladinho', disponivel: true, selecionado: false },
+    { id: 'esfirra', nome: 'Esfirra', disponivel: true, selecionado: false }
+  ],
+  salgadosSelecionadosOleo: 0,
+  salgadosSelecionadosForno: 0
+};
+
+// Carregar dados do localStorage
+function carregarAvailability() {
+  const saved = localStorage.getItem('produtosAvailability');
+  if (saved) {
+    const data = JSON.parse(saved);
+    produtosEventos.oleo.forEach(p => {
+      if (data[p.id] !== undefined) p.disponivel = data[p.id];
+    });
+    produtosEventos.forno.forEach(p => {
+      if (data[p.id] !== undefined) p.disponivel = data[p.id];
+    });
+  }
+  atualizarPaginaEventos();
+}

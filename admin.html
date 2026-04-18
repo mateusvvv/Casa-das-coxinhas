@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo - Casa da Coxinha</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="15" width="70" height="70" rx="12" fill="#c41e3a"/>
+      <ellipse cx="50" cy="40" rx="16" ry="20" fill="#FFA500"/>
+      <circle cx="50" cy="58" r="10" fill="#FFA500"/>
+    </svg>
+    <h1>Casa das</h1>
+    <div class="subtitle">Coxinhas</div>
+    <p>A melhor da cidade!</p>
+  </div>
+  
+  <div class="horario-funcionamento">
+    <div class="horario-content">
+      <span class="horario-icon">🕖</span>
+      <span class="horario-texto">
+        <strong>Estamos Abertos!</strong><br>
+        Quarta a Domingo | 18h às 23h
+      </span>
+    </div>
+  </div>
+  
+  <nav class="nav-tabs">
+    <button class="nav-tab" onclick="window.location.href='index.html'">
+      🍗 Cardápio Regular
+    </button>
+    <button class="nav-tab" onclick="window.location.href='eventos.html'">
+      🎉 Cardápio de Eventos
+    </button>
+    <button class="nav-tab active" onclick="window.location.href='admin.html'">
+      ⚙️ Painel Admin
+    </button>
+  </nav>
+</header>
+
+<div class="main-wrapper">
+  <div class="container">
+    <div class="painel-admin-page">
+      <div class="painel-admin-header-page">
+        <h1>⚙️ Painel de Administração</h1>
+        <p class="painel-subtitle">Gerencie a disponibilidade de todos os seus produtos</p>
+      </div>
+
+      <div class="painel-admin-body-page">
+        <h2>📋 Gerenciar Disponibilidade de Produtos</h2>
+        <p class="painel-info">Marque os checkboxes para indicar quais produtos estão disponíveis. Desmarque para indicar produtos esgotados.</p>
+        
+        <div class="painel-secao">
+          <h3>🍴 Cardápio Regular</h3>
+          <div id="painel-cardapio-regular" class="painel-produtos-page"></div>
+        </div>
+        
+        <div class="painel-secao">
+          <h3>🍴 Cardápio de Eventos - Óleo (R$ 45,00)</h3>
+          <div id="painel-eventos-oleo" class="painel-produtos-page"></div>
+        </div>
+
+        <div class="painel-secao">
+          <h3>🔥 Cardápio de Eventos - Forno (R$ 50,00)</h3>
+          <div id="painel-eventos-forno" class="painel-produtos-page"></div>
+        </div>
+      </div>
+      
+      <div class="painel-admin-footer-page">
+        <button class="btn-salvar" onclick="salvarAvailability()">💾 Salvar Todas as Alterações</button>
+        <button class="btn-voltar" onclick="window.location.href='index.html'">⬅️ Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  // Inicializar página de admin
+  document.addEventListener('DOMContentLoaded', function() {
+    carregarAvailability();
+    atualizarPainelAdminPage();
+  });
+  
+  // Atualizar Painel de Admin - Versão Page
+  function atualizarPainelAdminPage() {
+    const painelCardapio = document.getElementById('painel-cardapio-regular');
+    const painelOleo = document.getElementById('painel-eventos-oleo');
+    const painelForno = document.getElementById('painel-eventos-forno');
+    
+    // Produtos Cardápio Regular (simulado - você pode expandir conforme necessário)
+    const produtosCardapioRegular = [
+      { id: 'coxinha-frango', nome: 'Coxinha Frango' },
+      { id: 'coxinha-catupiry', nome: 'Coxinha c/ Catupiry' },
+      { id: 'coxinha-cheddar', nome: 'Coxinha c/ Cheddar' },
+      { id: 'bolinho-carne', nome: 'Bolinho de Carne' },
+      { id: 'bolinho-pizza', nome: 'Bolinho de Pizza' },
+      { id: 'enroladinho', nome: 'Enroladinho' }
+    ];
+    
+    painelCardapio.innerHTML = produtosCardapioRegular.map(p => `
+      <div class="painel-produto">
+        <input type="checkbox" id="check-${p.id}" checked>
+        <label for="check-${p.id}">${p.nome}</label>
+      </div>
+    `).join('');
+    
+    painelOleo.innerHTML = produtosEventos.oleo.map(p => `
+      <div class="painel-produto">
+        <input type="checkbox" id="check-${p.id}" ${p.disponivel ? 'checked' : ''}>
+        <label for="check-${p.id}">${p.nome}</label>
+      </div>
+    `).join('');
+    
+    painelForno.innerHTML = produtosEventos.forno.map(p => `
+      <div class="painel-produto">
+        <input type="checkbox" id="check-${p.id}" ${p.disponivel ? 'checked' : ''}>
+        <label for="check-${p.id}">${p.nome}</label>
+      </div>
+    `).join('');
+  }
+  
+  // Modificar função salvar para trabalhar com a nova página
+  const salvarAvailabilityOriginal = window.salvarAvailability;
+  window.salvarAvailability = function() {
+    const data = {};
+    
+    // Salvar eventos
+    produtosEventos.oleo.forEach(p => {
+      data[p.id] = document.getElementById(`check-${p.id}`)?.checked || false;
+    });
+    produtosEventos.forno.forEach(p => {
+      data[p.id] = document.getElementById(`check-${p.id}`)?.checked || false;
+    });
+    
+    localStorage.setItem('produtosAvailability', JSON.stringify(data));
+    
+    // Atualizar estado
+    produtosEventos.oleo.forEach(p => p.disponivel = data[p.id]);
+    produtosEventos.forno.forEach(p => p.disponivel = data[p.id]);
+    
+    alert('✓ Todas as alterações foram salvas com sucesso!');
+  };
+</script>
+
+</body>
+</html>

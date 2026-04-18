@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardápio de Eventos - Casa da Coxinha</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .produto.indisponivel {
+      opacity: 0.6;
+      border-color: #666;
+      filter: grayscale(0.5);
+    }
+    
+    .produto.indisponivel h3::after {
+      content: " (ESGOTADO)";
+      color: #c41e3a;
+      font-weight: bold;
+      font-size: 0.8em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="15" width="70" height="70" rx="12" fill="#c41e3a"/>
+      <ellipse cx="50" cy="40" rx="16" ry="20" fill="#FFA500"/>
+      <circle cx="50" cy="58" r="10" fill="#FFA500"/>
+    </svg>
+    <h1>Casa das</h1>
+    <div class="subtitle">Coxinhas</div>
+    <p>A melhor da cidade!</p>
+  </div>
+  
+  <div class="horario-funcionamento">
+    <div class="horario-content">
+      <span class="horario-icon">🕖</span>
+      <span class="horario-texto">
+        <strong>Estamos Abertos!</strong><br>
+        Quarta a Domingo | 18h às 23h
+      </span>
+    </div>
+  </div>
+  
+  <nav class="nav-tabs">
+    <button class="nav-tab" onclick="window.location.href='index.html'">
+      🍗 Cardápio Regular
+    </button>
+    <button class="nav-tab active" onclick="window.location.href='eventos.html'">
+      🎉 Cardápio de Eventos
+    </button>
+    <button class="nav-tab" onclick="window.location.href='admin.html'">
+      ⚙️ Painel Admin
+    </button>
+  </nav>
+</header>
+
+<div class="main-wrapper">
+  <div class="container">
+    <div class="categoria">
+      <h2>🍴 Cardápio de Eventos - Óleo (R$ 45,00)</h2>
+      <p class="categoria-desc">Escolha 3 tipos de salgados para montar seu cardápio</p>
+      <p class="categoria-desc-importante">⚠️ Selecione exatamente 3 tipos diferentes</p>
+      <div id="contador-oleo" class="contador-salgados">Selecionados: 0/3</div>
+      <div class="produtos-grid" id="grid-oleo">
+        <!-- Preenchido por JavaScript -->
+      </div>
+    </div>
+    
+    <div class="categoria">
+      <h2>🔥 Cardápio de Eventos - Forno (R$ 50,00)</h2>
+      <p class="categoria-desc">Escolha 2 tipos de salgados para montar seu cardápio</p>
+      <p class="categoria-desc-importante">⚠️ Selecione exatamente 2 tipos diferentes</p>
+      <div id="contador-forno" class="contador-salgados">Selecionados: 0/2</div>
+      <div class="produtos-grid" id="grid-forno">
+        <!-- Preenchido por JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <div id="carrinho">
+    <h2>🛒 Carrinho</h2>
+    <div id="carrinho-itens" class="carrinho-vazio">Nenhum item adicionado</div>
+    <div id="carrinho-resumo" class="carrinho-resumo" hidden>
+      <div class="bairro-selector">
+        <label for="modo-entrega">Modo de Retirada / Entrega:</label>
+        <select id="modo-entrega" onchange="atualizarModoEntrega()">
+          <option value="entrega">Entrega</option>
+          <option value="retirada">Retirar no estabelecimento</option>
+        </select>
+      </div>
+      <div id="bairro-section" class="bairro-selector">
+        <label for="bairro-select">Selecione seu bairro:</label>
+        <select id="bairro-select" onchange="atualizarTaxa()">
+          <option value="">-- Escolha o bairro --</option>
+          <option value="Santo Antônio">Santo Antônio - R$ 5,00</option>
+          <option value="São Pedro">São Pedro - R$ 7,00</option>
+          <option value="Centro">Centro - R$ 6,00</option>
+          <option value="Cohab 1">Cohab 1 - R$ 8,00</option>
+          <option value="Viana e Moura da br">Viana e Moura da BR - R$ 8,00</option>
+          <option value="Viana e Moura da faculdade">Viana e Moura da Faculdade - R$ 12,00</option>
+          <option value="Vila bela">Vila Bela - R$ 15,00</option>
+          <option value="Planalto">Planalto - R$ 10,00</option>
+          <option value="Cavalo morto até a primeira igreja">Cavalo Morto até a Primeira Igreja - R$ 8,00</option>
+          <option value="Cavalo morto depois da primeira igreja">Cavalo Morto Depois da Primeira Igreja - R$ 12,00</option>
+          <option value="Maria Cristina">Maria Cristina - R$ 10,00</option>
+          <option value="Tereza Mendonça">Tereza Mendonça - R$ 12,00</option>
+          <option value="Vila da barragem">Vila da Barragem - R$ 15,00</option>
+          <option value="Batinga">Batinga - R$ 7,00</option>
+        </select>
+      </div>
+      <div id="numero-casa-section" class="bairro-selector">
+        <label for="numero-casa">Número da Casa:</label>
+        <input type="text" id="numero-casa" placeholder="Ex: 123" oninput="atualizarEstadoFinalizar()" />
+      </div>
+      <div id="ponto-referencia-section" class="bairro-selector">
+        <label for="ponto-referencia">Ponto de Referência:</label>
+        <input type="text" id="ponto-referencia" placeholder="Ex: Próximo ao mercado" />
+      </div>
+      <div id="retirada-info" class="bairro-selector" hidden>
+        <label>Retirada no estabelecimento:</label>
+        <div>Cohab 3, Rua 5, nº 28</div>
+        <div><a href="https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7" target="_blank" rel="noreferrer">Ver no mapa</a></div>
+      </div>
+      <div class="bairro-selector">
+        <label for="forma-pagamento">Forma de Pagamento:</label>
+        <select id="forma-pagamento" onchange="atualizarFormaPagamento()">
+          <option value="">-- Escolha a forma de pagamento --</option>
+          <option value="pix">PIX</option>
+          <option value="debito">Cartão de Débito</option>
+          <option value="credito">Cartão de Crédito</option>
+          <option value="especie">Dinheiro em Espécie</option>
+        </select>
+      </div>
+      <div class="resumo-linha">
+        <span>Subtotal:</span>
+        <span id="subtotal">R$ 0,00</span>
+      </div>
+      <div class="resumo-linha">
+        <span>Taxa Entrega:</span>
+        <span id="taxa">R$ 0,00</span>
+      </div>
+      <div class="resumo-total">
+        <div class="total-linha">
+          <span>TOTAL:</span>
+          <span id="total">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+    <div class="aviso-pagamento">
+      <p class="aviso-pagamento-titulo">FORMAS DE PAGAMENTO</p>
+      
+      <div class="metodo-pagamento">
+        <h4>PIX (Recomendado)</h4>
+        <div class="pix-box">
+          <p class="pix-label">Chave PIX</p>
+          <p class="pix-chave">81982116454</p>
+          <p class="pix-titular">Titular: Edmilson José da Silva</p>
+        </div>
+      </div>
+
+      <div class="metodo-pagamento">
+        <h4>Cartão de Crédito/Débito</h4>
+        <p class="metodo-info">No cartão de crédito há acréscimo da maquineta.</p>
+      </div>
+
+      <div class="metodo-pagamento">
+        <h4>Dinheiro em Espécie</h4>
+        <p class="metodo-info">Pagamento na entrega</p>
+      </div>
+
+      <div class="aviso-importante">
+        <div class="aviso-importante-icone">⚠️</div>
+        <p><strong>IMPORTANTE:</strong> Escolha a forma de pagamento antes de finalizar. Se o pagamento for via PIX, ele deve ser feito primeiro e o comprovante precisa ser enviado no WhatsApp para confirmar o pedido. <strong>No cartão de crédito há acréscimo da maquineta.</strong> A entrega só é realizada após a confirmação do pagamento.</p>
+      </div>
+    </div>
+    <button class="finalizar" id="btn-finalizar" onclick="finalizarEventos()" disabled>Finalizar Pedido</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  // Inicializar página de eventos
+  document.addEventListener('DOMContentLoaded', function() {
+    carregarAvailability();
+    atualizarPaginaEventos();
+  });
+</script>
+
+</body>
+</html>
