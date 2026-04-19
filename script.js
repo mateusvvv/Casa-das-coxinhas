@@ -733,15 +733,27 @@ function obterConfiguracaoEvento(tipo) {
 function atualizarContadorEventos() {
   const contadorOleo = document.getElementById("contador-oleo");
   const contadorForno = document.getElementById("contador-forno");
+  const btnOleo = document.getElementById("btn-add-oleo");
+  const btnForno = document.getElementById("btn-add-forno");
 
   if (contadorOleo) {
     contadorOleo.innerText = `Selecionados: ${produtosEventos.salgadosSelecionadosOleo}/3`;
-    contadorOleo.classList.toggle("completo", produtosEventos.salgadosSelecionadosOleo === 3);
+    const completo = produtosEventos.salgadosSelecionadosOleo === 3;
+    contadorOleo.classList.toggle("completo", completo);
+    if (btnOleo) {
+      btnOleo.disabled = !completo;
+      btnOleo.classList.toggle("ready", completo);
+    }
   }
 
   if (contadorForno) {
     contadorForno.innerText = `Selecionados: ${produtosEventos.salgadosSelecionadosForno}/2`;
-    contadorForno.classList.toggle("completo", produtosEventos.salgadosSelecionadosForno === 2);
+    const completo = produtosEventos.salgadosSelecionadosForno === 2;
+    contadorForno.classList.toggle("completo", completo);
+    if (btnForno) {
+      btnForno.disabled = !completo;
+      btnForno.classList.toggle("ready", completo);
+    }
   }
 }
 
