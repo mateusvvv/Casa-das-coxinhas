@@ -113,7 +113,7 @@ Quarta a Domingo | 18h às 23h
 
 <h3>📌 Informações Importantes</h3>
 
-<p>✅ Para confirmar o pedido é necessário pagar <strong>50% antecipado</strong>.</p>
+<p>✅ O pagamento de <strong>50% antecipado</strong> só deve ser feito após confirmarmos sua vaga na agenda.</p>
 
 <p>📅 Pedidos para eventos precisam ser feitos com <strong>mínimo de 8 dias de antecedência</strong>.</p>
 
@@ -262,13 +262,13 @@ placeholder="Ex: Próximo ao mercado">
 <label>Retirada no estabelecimento:</label>
 <div style="margin-bottom: 10px;">Cohab 3, Rua 5, nº 28</div>
 <div><a href="https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7" target="_blank" rel="noreferrer">Ver no mapa</a></div>
-<div style="margin-top: 15px;">
-  <label for="retirada-dia">Dia da Retirada:</label>
-  <input type="text" id="retirada-dia" placeholder="Data" autocomplete="off" oninput="atualizarEstadoFinalizar()" />
-  <label for="retirada-horario" style="margin-top: 10px;">Horário da Retirada:</label>
-  <input type="text" id="retirada-horario" placeholder="Hora" autocomplete="off" oninput="atualizarEstadoFinalizar()" />
-  <small style="color: #FFB81C; display: block; margin-top: 5px;">*Sujeito a disponibilidade de agenda.</small>
+<div id="retirada-display-box" style="margin-top: 15px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
+  <p id="retirada-status" style="color: #cbd5e1; font-size: 0.9em; margin-bottom: 10px;">Nenhum horário selecionado</p>
+  <button type="button" class="btn-agendar-retirada" onclick="abrirModalRetirada()">
+    <span>📅</span> Escolher Data e Hora
+  </button>
 </div>
+<small style="color: #FFB81C; display: block; margin-top: 5px;">*Sujeito a disponibilidade de agenda.</small>
 </div>
 
 <!-- PAGAMENTO -->
@@ -323,6 +323,27 @@ Finalizar Pedido
 </button>
 
 </div>
+</div>
+
+<div id="modal-retirada" class="modal-overlay">
+  <div class="modal">
+    <h2 style="text-align: center; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; margin-bottom: 20px;">📅 Agendar Retirada</h2>
+    
+    <div class="modal-group">
+      <label for="retirada-dia" style="color: #FFB81C;">Qual o dia da retirada?</label>
+      <input type="text" id="retirada-dia" placeholder="Ex: Hoje, Amanhã, Sábado..." autocomplete="off" oninput="atualizarEstadoFinalizar()" />
+    </div>
+
+    <div class="modal-group">
+      <label for="retirada-horario" style="color: #FFB81C;">Qual o horário desejado?</label>
+      <input type="text" id="retirada-horario" placeholder="Ex: 19:00, 20:30..." autocomplete="off" oninput="atualizarEstadoFinalizar()" />
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn-confirmar" onclick="confirmarModalRetirada()">Confirmar</button>
+      <button class="btn-cancelar" onclick="fecharModalRetirada()">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script type="module" src="firebase.js"></script>

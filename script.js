@@ -293,6 +293,15 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
   }
+
+  const modalRetirada = document.getElementById("modal-retirada");
+  if (modalRetirada) {
+    modalRetirada.addEventListener("click", function(e) {
+      if (e.target === this) {
+        fecharModalRetirada();
+      }
+    });
+  }
 });
 
 function alterarQtd(id, valor) {
@@ -359,6 +368,7 @@ function atualizarModoEntrega() {
     numeroCasaSection.hidden = true;
     pontoReferenciaSection.hidden = true;
     retiradaInfoSection.hidden = false;
+    abrirModalRetirada();
   } else {
     bairroSection.hidden = false;
     numeroCasaSection.hidden = false;
@@ -366,6 +376,35 @@ function atualizarModoEntrega() {
     retiradaInfoSection.hidden = true;
   }
   render();
+  atualizarEstadoFinalizar();
+}
+
+function abrirModalRetirada() {
+  const modal = document.getElementById("modal-retirada");
+  if (modal) modal.classList.add("active");
+}
+
+function fecharModalRetirada() {
+  const modal = document.getElementById("modal-retirada");
+  if (modal) modal.classList.remove("active");
+}
+
+function confirmarModalRetirada() {
+  const dia = document.getElementById("retirada-dia").value.trim();
+  const hora = document.getElementById("retirada-horario").value.trim();
+
+  const status = document.getElementById("retirada-status");
+  if (status) {
+    if (dia && hora) {
+      status.innerHTML = `<strong>Agendado para:</strong><br>${dia} às ${hora}`;
+      status.style.color = "#FFB81C";
+    } else {
+      status.innerText = "Nenhum horário selecionado";
+      status.style.color = "#cbd5e1";
+    }
+  }
+
+  fecharModalRetirada();
   atualizarEstadoFinalizar();
 }
 
@@ -597,9 +636,9 @@ function finalizar() {
     msg += "*AVISO IMPORTANTE*\n";
     msg += "══════════════\n\n";
     if (formaPagamento === "pix") {
-      msg += "O pedido será confirmado após o pagamento via PIX\n\n";
+      msg += " *NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp antes de fazer o PIX. Precisamos validar se temos vaga disponível para a data e horário que você escolheu. Isso evita transtornos de pagamentos adiantados sem vaga na agenda.\n\n";
     } else if (formaPagamento === "credito" || formaPagamento === "debito") {
-      msg += "O entregador irá levar a maquineta\n\n";
+      msg += "O entregador irá levar a maquineta. Lembrando que pagamentos no cartão possuem acréscimo da taxa da maquineta.\n\n";
     }
   }
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));

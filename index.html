@@ -319,13 +319,13 @@
         <label>Retirada no estabelecimento:</label>
         <div style="margin-bottom: 10px;">Cohab 3, Rua 5, nº 28</div>
         <div><a href="https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7" target="_blank" rel="noreferrer">Ver no mapa</a></div>
-        <div style="margin-top: 15px;">
-          <label for="retirada-dia">Dia da Retirada:</label>
-          <input type="text" id="retirada-dia" placeholder="Data" autocomplete="off" oninput="atualizarEstadoFinalizar()" />
-          <label for="retirada-horario" style="margin-top: 10px;">Horário da Retirada:</label>
-          <input type="text" id="retirada-horario" placeholder="Hora" autocomplete="off" oninput="atualizarEstadoFinalizar()" />
-          <small style="color: #FFB81C; display: block; margin-top: 5px;">*Sujeito a disponibilidade de agenda.</small>
+        <div id="retirada-display-box" style="margin-top: 15px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
+          <p id="retirada-status" style="color: #cbd5e1; font-size: 0.9em; margin-bottom: 10px;">Nenhum horário selecionado</p>
+          <button type="button" class="btn-agendar-retirada" onclick="abrirModalRetirada()">
+            <span>📅</span> Escolher Data e Hora
+          </button>
         </div>
+        <small style="color: #FFB81C; display: block; margin-top: 5px;">*Sujeito a disponibilidade de agenda.</small>
       </div>
       <div class="bairro-selector">
         <label for="forma-pagamento">Forma de Pagamento:</label>
@@ -356,7 +356,7 @@
       <p class="aviso-pagamento-titulo">FORMAS DE PAGAMENTO</p>
       
       <div class="metodo-pagamento">
-        <h4>PIX (Recomendado)</h4>
+        <h4>PIX (Aguarde Confirmação)</h4>
         <div class="pix-box">
           <p class="pix-label">Chave PIX</p>
           <p class="pix-chave">81982116454</p>
@@ -375,8 +375,12 @@
       </div>
 
       <div class="aviso-importante">
-        <div class="aviso-importante-icone">⚠️</div>
-        <p><strong>IMPORTANTE:</strong> Escolha a forma de pagamento antes de finalizar. Se o pagamento for via PIX, ele deve ser feito primeiro e o comprovante precisa ser enviado no WhatsApp para confirmar o pedido. <strong>No cartão de crédito tem acréscimo da maquineta.</strong> A entrega só é realizada após a confirmação do pagamento.</p>
+        <div class="aviso-importante-icone">❗</div>
+        <p>
+          <strong>NÃO PAGUE AGORA:</strong> Se o seu pedido for para <strong>RETIRADA ou EVENTO</strong>, primeiro finalize o pedido e <strong>aguarde nosso "OK" no WhatsApp</strong>. Só realize o PIX após confirmarmos se temos vaga disponível para a sua data. 
+          <br><br>
+          <strong>CARTÃO:</strong> Pagamentos no cartão possuem acréscimo da taxa da maquineta.
+        </p>
       </div>
     </div>
     <button class="finalizar" id="btn-finalizar" onclick="finalizar()" disabled>Finalizar Pedido</button>
@@ -479,6 +483,27 @@
     <div class="modal-buttons">
       <button class="btn-confirmar" onclick="confirmarCachorro()">Adicionar</button>
       <button class="btn-cancelar" onclick="fecharModalCachorro()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-retirada" class="modal-overlay">
+  <div class="modal">
+    <h2 style="text-align: center; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; margin-bottom: 20px;">📅 Agendar Retirada</h2>
+    
+    <div class="modal-group">
+      <label for="retirada-dia" style="color: #FFB81C;">Qual o dia da retirada?</label>
+      <input type="text" id="retirada-dia" placeholder="Ex: Hoje, Amanhã, Sábado..." autocomplete="off" oninput="atualizarEstadoFinalizar()" />
+    </div>
+
+    <div class="modal-group">
+      <label for="retirada-horario" style="color: #FFB81C;">Qual o horário desejado?</label>
+      <input type="text" id="retirada-horario" placeholder="Ex: 19:00, 20:30..." autocomplete="off" oninput="atualizarEstadoFinalizar()" />
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn-confirmar" onclick="confirmarModalRetirada()">Confirmar</button>
+      <button class="btn-cancelar" onclick="fecharModalRetirada()">Cancelar</button>
     </div>
   </div>
 </div>
