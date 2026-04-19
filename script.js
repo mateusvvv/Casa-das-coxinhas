@@ -602,7 +602,7 @@ function finalizar() {
   msg += "*FORMA DE PAGAMENTO ESCOLHIDA:*\n";
   msg += `${obterFormaPagamentoTexto()}\n`;
   if (formaPagamento === "pix") {
-    msg += "Chave PIX: 81982116454\n";
+    msg += "Chave pix: *81982116454*\n";
     msg += "Titular: Edmilson José da Silva\n";
   } else if (formaPagamento === "credito") {
     msg += "Obs: No cartão de crédito tem acréscimo da maquineta\n";
@@ -619,7 +619,7 @@ function finalizar() {
     msg += `Data: ${dia}\n`;
     msg += `Horário: ${hora}\n`;
     msg += "Endereço: Cohab 3, Rua 5, nº 28\n";
-    msg += "Prazo médio de entrega: 35 a 50 minutos\n";
+    msg += "Prazo médio de entrega do pedido: 35 a 50 minutos\n";
     msg += "Link: https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7\n";
     msg += "Obs: Sujeito a disponibilidade de agenda.\n\n";
   } else {
@@ -629,6 +629,7 @@ function finalizar() {
     if (pontoReferencia) {
       msg += `Referência: ${pontoReferencia}\n`;
     }
+    msg += "Prazo médio de entrega do pedido: 35 a 50 minutos\n";
     msg += "Obs: Envie a localização em tempo atual para facilitar a entrega\n\n";
   }
 
@@ -636,9 +637,9 @@ function finalizar() {
   const isAgendamento = modoEntrega === "retirada" || temEvento;
 
   if (formaPagamento !== "especie" || isAgendamento) {
-    msg += "══════════════\n";
-    msg += "*AVISO IMPORTANTE*\n";
-    msg += "══════════════\n\n";
+    msg += "══════════════════════════\n";
+    msg += "      *AVISO IMPORTANTE*\n";
+    msg += "══════════════════════════\n\n";
 
     if (isAgendamento) {
       msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
