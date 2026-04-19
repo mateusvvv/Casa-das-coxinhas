@@ -45,6 +45,34 @@ header {
   border-color: #c41e3a;
 }
 
+/* BOTÃO DO DESENVOLVEDOR */
+.dev-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 100;
+  backdrop-filter: blur(5px);
+}
+
+.dev-btn:hover {
+  background: #c41e3a;
+  color: white;
+  border-color: white;
+  transform: rotate(15deg) scale(1.1);
+}
+
 .header-logo {
   max-width: 260px;
   width: auto;

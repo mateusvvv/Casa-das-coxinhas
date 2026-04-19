@@ -304,6 +304,22 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+function abrirModalDev() {
+  const modal = document.getElementById("modal-dev");
+  if (modal) modal.classList.add("active");
+}
+
+function fecharModalDev() {
+  const modal = document.getElementById("modal-dev");
+  if (modal) modal.classList.remove("active");
+}
+
+// Adicionar fechamento ao clicar fora do modal dev
+window.addEventListener("click", function(e) {
+  const modal = document.getElementById("modal-dev");
+  if (e.target === modal) fecharModalDev();
+});
+
 function alterarQtd(id, valor) {
   if (!produtoEstaDisponivel(id)) {
     return;
