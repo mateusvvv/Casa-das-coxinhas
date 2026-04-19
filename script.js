@@ -631,14 +631,26 @@ function finalizar() {
     msg += "Obs: Envie a localização em tempo atual para facilitar a entrega\n\n";
   }
 
-  if (formaPagamento !== "especie") {
+  const temEvento = carrinho.some(item => item.nome.includes("Cardápio de Eventos"));
+  const isAgendamento = modoEntrega === "retirada" || temEvento;
+
+  if (formaPagamento !== "especie" || isAgendamento) {
     msg += "══════════════\n";
     msg += "*AVISO IMPORTANTE*\n";
     msg += "══════════════\n\n";
-    if (formaPagamento === "pix") {
-      msg += " *NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp antes de fazer o PIX. Precisamos validar se temos vaga disponível para a data e horário que você escolheu. Isso evita transtornos de pagamentos adiantados sem vaga na agenda.\n\n";
-    } else if (formaPagamento === "credito" || formaPagamento === "debito") {
-      msg += "O entregador irá levar a maquineta. Lembrando que pagamentos no cartão possuem acréscimo da taxa da maquineta.\n\n";
+
+    if (isAgendamento) {
+      msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
+    } else if (formaPagamento === "pix") {
+      msg += "*PAGAMENTO VIA PIX:* Por favor, aguarde a nossa confirmação antes de realizar a transferência.\n\n";
+    }
+
+    if (formaPagamento === "credito" || formaPagamento === "debito") {
+      msg += "Lembrando que pagamentos no cartão possuem acréscimo da taxa da maquineta. ";
+      if (modoEntrega === "entrega") {
+        msg += "O entregador irá levar a maquineta.";
+      }
+      msg += "\n\n";
     }
   }
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));
