@@ -573,12 +573,11 @@ function finalizar() {
   msg += "\n";
 
   if (modoEntrega === "retirada") {
-    const dia = document.getElementById("retirada-dia").value;
-    const hora = document.getElementById("retirada-horario").value;
-    const dataFormatada = dia.split('-').reverse().join('/');
+    const dia = document.getElementById("retirada-dia").value.trim();
+    const hora = document.getElementById("retirada-horario").value.trim();
 
     msg += "*RETIRADA NO ESTABELECIMENTO:*\n";
-    msg += `Data: ${dataFormatada}\n`;
+    msg += `Data: ${dia}\n`;
     msg += `Horário: ${hora}\n`;
     msg += "Endereço: Cohab 3, Rua 5, nº 28\n";
     msg += "Link: https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7\n";
