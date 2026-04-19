@@ -571,6 +571,7 @@ function finalizar() {
 
   const numeroCasa = document.getElementById("numero-casa").value.trim();
   const pontoReferencia = document.getElementById("ponto-referencia").value.trim();
+  const obsPedido = document.getElementById("obs-pedido")?.value.trim();
 
   if (modoEntrega === "entrega" && !numeroCasa) {
     alert("Por favor, informe o número da casa!");
@@ -598,9 +599,15 @@ function finalizar() {
   msg += `Subtotal: ${formatarMoeda(subtotal)}\n`;
   msg += `Taxa de Entrega: ${formatarMoeda(taxa)}\n`;
   msg += `TOTAL: ${formatarMoeda(total)}\n\n`;
+  msg += `*TOTAL: ${formatarMoeda(total)}*\n\n`;
 
   msg += "*FORMA DE PAGAMENTO ESCOLHIDA:*\n";
   msg += `${obterFormaPagamentoTexto()}\n`;
+  if (obsPedido) {
+    msg += `*Observações:* ${obsPedido}\n`;
+  }
+  msg += "\n";
+
   if (formaPagamento === "pix") {
     msg += "Chave pix: *81982116454*\n";
     msg += "Titular: Edmilson José da Silva\n";
@@ -637,9 +644,9 @@ function finalizar() {
   const isAgendamento = modoEntrega === "retirada" || temEvento;
 
   if (formaPagamento !== "especie" || isAgendamento) {
-    msg += "══════════════════════════\n";
-    msg += "      *AVISO IMPORTANTE*\n";
-    msg += "══════════════════════════\n\n";
+    msg += "══════════════\n";
+    msg += "*AVISO IMPORTANTE*\n";
+    msg += "══════════════\n\n";
 
     if (isAgendamento) {
       msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
