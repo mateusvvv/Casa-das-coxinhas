@@ -42,7 +42,6 @@ const produtosRegulares = [
   { id: "x-burguer", nome: "X-Burguer", disponivel: true },
   { id: "hamburguer", nome: "Hamburguer", disponivel: true },
   { id: "x-tudo", nome: "X-Tudo", disponivel: true },
-  { id: "adicionais", nome: "Adicionais", disponivel: true },
   { id: "cachorro-quente", nome: "Cachorro Quente", disponivel: true },
   { id: "refri-1l", nome: "Refrigerante 1L", disponivel: true },
   { id: "refri-lata", nome: "Refrigerante Lata", disponivel: true }
@@ -238,8 +237,15 @@ function abrirModalCachorro() {
 
 function fecharModalCachorro() {
   document.getElementById("modal-cachorro").classList.remove("active");
-  const select = document.getElementById("dog-opcao");
-  if (select) select.value = "Completo";
+  document.getElementById("dog-completo").checked = true;
+  document.querySelectorAll(".dog-check").forEach(c => c.checked = true);
+}
+
+function toggleDogCompleto(isCompleto) {
+  const checks = document.querySelectorAll(".dog-check");
+  if (isCompleto) {
+    checks.forEach(c => c.checked = true);
+  }
 }
 
 function confirmarCachorro() {
@@ -249,10 +255,19 @@ function confirmarCachorro() {
     return;
   }
 
-  const opcao = document.getElementById("dog-opcao").value;
-  const descricao = `Cachorro Quente (${opcao})`;
-  const qtd = quantidades["cachorro-quente"] || 1;
+  const completo = document.getElementById("dog-completo").checked;
+  let descricao = "";
 
+  if (completo) {
+    descricao = "Cachorro Quente (Completo)";
+  } else {
+    const selecionados = Array.from(document.querySelectorAll(".dog-check:checked")).map(c => c.value);
+    descricao = selecionados.length > 0 
+      ? `Cachorro Quente (${selecionados.join(", ")})` 
+      : "Cachorro Quente (Sem complementos)";
+  }
+
+  const qtd = quantidades["cachorro-quente"] || 1;
   for (let i = 0; i < qtd; i++) {
     carrinho.push({ nome: descricao, preco: 8.00 });
   }

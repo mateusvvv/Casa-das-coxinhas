@@ -230,29 +230,17 @@
           <button class="adicionar" onclick="add('X-Tudo', 12.00, 'x-tudo')">Adicionar ao Carrinho</button>
         </div>
 
-        <div class="produto" data-product-id="adicionais">
-          <h3>Adicionais</h3>
-          <div class="preco">R$ 2,00</div>
+        <div class="produto" data-product-id="cachorro-quente">
+          <h3>Cachorro Quente</h3>
+          <div class="preco">R$ 8,00</div>
           <div class="quantidade-selector">
-            <button onclick="alterarQtd('adicionais', -1)">−</button>
-            <span id="qtd-adicionais">1</span>
-            <button onclick="alterarQtd('adicionais', 1)">+</button>
+            <button onclick="alterarQtd('cachorro-quente', -1)">−</button>
+            <span id="qtd-cachorro-quente">1</span>
+            <button onclick="alterarQtd('cachorro-quente', 1)">+</button>
           </div>
-          <button class="adicionar" onclick="add('Adicionais', 2.00, 'adicionais')">Adicionar ao Carrinho</button>
+          <button class="adicionar" onclick="abrirModalCachorro()">Adicionar ao Carrinho</button>
         </div>
       </div>
-
-      <div class="produto" data-product-id="cachorro-quente">
-        <h3>Cachorro Quente</h3>
-        <div class="preco">R$ 8,00</div>
-        <div class="quantidade-selector">
-          <button onclick="alterarQtd('cachorro-quente', -1)">−</button>
-          <span id="qtd-cachorro-quente">1</span>
-          <button onclick="alterarQtd('cachorro-quente', 1)">+</button>
-        </div>
-        <button class="adicionar" onclick="abrirModalCachorro()">Adicionar ao Carrinho</button>
-      </div>
-
     </div>
 
     
@@ -467,16 +455,45 @@
     <h2 style="text-align: center; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; margin-bottom: 20px;">Cachorro Quente</h2>
     <p style="text-align: center; color: #cbd5e1; margin-bottom: 20px;">Selecione o que deseja no seu lanche:</p>
 
+    <div class="modal-group" style="background: rgba(196, 30, 58, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <label class="checkbox-salgado">
+        <input type="checkbox" id="dog-completo" checked onchange="toggleDogCompleto(this.checked)">
+        <span class="checkbox-custom"></span> <strong>COMPLETO (Tudo incluso)</strong>
+      </label>
+    </div>
+
     <div class="modal-group">
-      <label for="dog-opcao">Como você deseja?</label>
-      <select id="dog-opcao">
-        <option value="Completo">Completo (Tudo incluso)</option>
-        <option value="Sem verduras">Sem verduras (Só molhos)</option>
-        <option value="Só com Catchup">Só com Catchup</option>
-        <option value="Só com Mostarda">Só com Mostarda</option>
-        <option value="Só com Maionese">Só com Maionese</option>
-        <option value="Sem molhos e Sem verduras">Simples (Só pão e carne)</option>
-      </select>
+      <label style="margin-bottom: 15px; display: block;">Ou selecione os itens:</label>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Tomate" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Tomate</span>
+        </label>
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Cebola" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Cebola</span>
+        </label>
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Milho Verde" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Milho</span>
+        </label>
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Ervilha" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Ervilha</span>
+        </label>
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Catchup" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Catchup</span>
+        </label>
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Mostarda" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Mostarda</span>
+        </label>
+        <label class="checkbox-salgado">
+          <input type="checkbox" class="dog-check" value="Maionese" checked onchange="document.getElementById('dog-completo').checked = false">
+          <span class="checkbox-custom"></span> <span>Maionese</span>
+        </label>
+      </div>
     </div>
 
     <div class="modal-buttons">
