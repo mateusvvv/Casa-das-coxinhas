@@ -241,6 +241,18 @@
           <button class="adicionar" onclick="add('Adicionais', 2.00, 'adicionais')">Adicionar ao Carrinho</button>
         </div>
       </div>
+
+      <div class="produto" data-product-id="cachorro-quente">
+        <h3>Cachorro Quente</h3>
+        <div class="preco">R$ 8,00</div>
+        <div class="quantidade-selector">
+          <button onclick="alterarQtd('cachorro-quente', -1)">−</button>
+          <span id="qtd-cachorro-quente">1</span>
+          <button onclick="alterarQtd('cachorro-quente', 1)">+</button>
+        </div>
+        <button class="adicionar" onclick="abrirModalCachorro()">Adicionar ao Carrinho</button>
+      </div>
+
     </div>
 
     
@@ -250,7 +262,7 @@
       <div class="produtos-grid">
         <div class="produto" data-product-id="refri-1l">
           <h3>Refrigerante 1L</h3>
-          <p>Coca-Cola, Fanta ou Guaraná</p>
+          <p>Coca-Cola ou Guaraná</p>
           <div class="preco">R$ 9,00</div>
           <div class="quantidade-selector">
             <button onclick="alterarQtd('refri-1l', -1)">−</button>
@@ -305,6 +317,7 @@
           <option value="Tereza Mendonça">Tereza Mendonça - R$ 12,00</option>
           <option value="Vila da barragem">Vila da Barragem - R$ 15,00</option>
           <option value="Batinga">Batinga - R$ 7,00</option>
+          <option value="">Carregando bairros...</option>
         </select>
       </div>
       <div id="numero-casa-section" class="bairro-selector">
@@ -446,6 +459,31 @@
     <div class="modal-buttons">
       <button class="btn-confirmar" onclick="confirmarPastel()">Adicionar</button>
       <button class="btn-cancelar" onclick="fecharModalPastel()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-cachorro" class="modal-overlay">
+  <div class="modal">
+    <h2 style="text-align: center; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; margin-bottom: 20px;">Cachorro Quente</h2>
+    <p style="text-align: center; color: #cbd5e1; margin-bottom: 20px;">Selecione o que deseja no seu lanche:</p>
+
+    <div class="modal-group">
+      <label for="dog-opcao">Como você deseja?</label>
+      <select id="dog-opcao">
+        <option value="Completo">Completo (Tudo incluso)</option>
+        <option value="Sem verduras">Sem verduras (Só molhos)</option>
+        <option value="Só com Catchup">Só com Catchup</option>
+        <option value="Só com Mostarda">Só com Mostarda</option>
+        <option value="Só com Maionese">Só com Maionese</option>
+        <option value="Sem molhos e Sem verduras">Simples (Só pão e carne)</option>
+        <option value="Personalizado">Personalizado (Avisar no WhatsApp)</option>
+      </select>
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn-confirmar" onclick="confirmarCachorro()">Adicionar</button>
+      <button class="btn-cancelar" onclick="fecharModalCachorro()">Cancelar</button>
     </div>
   </div>
 </div>

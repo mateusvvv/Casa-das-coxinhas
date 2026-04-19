@@ -960,8 +960,14 @@ button.finalizar:disabled {
 }
 
 .painel-produto.indisponivel {
-  opacity: 0.7;
+  opacity: 1;
   border-color: #c41e3a;
+  background: rgba(196, 30, 58, 0.1);
+}
+
+.painel-produto.indisponivel label {
+  color: #fca5a5;
+  text-decoration: line-through;
 }
 
 .painel-produto input[type="checkbox"] {
@@ -1366,5 +1372,46 @@ button.adicionar{
 
   .aviso-box p {
     font-size: 16px;
+  }
+}
+
+/* 📱 CORREÇÃO MOBILE PRODUTOS ESGOTADOS ADMIN */
+@media (max-width: 768px) {
+
+  .produto,
+  .item-produto,
+  .produto-admin,
+  .lista-produtos li {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    flex-wrap: wrap;
+  }
+
+  .produto label,
+  .item-produto label,
+  .produto-admin label,
+  .lista-produtos li label {
+    display: block;
+    width: 100%;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .produto input,
+  .item-produto input,
+  .produto-admin input {
+    margin-bottom: 8px;
+  }
+
+  .produto button,
+  .item-produto button,
+  .produto-admin button {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  body {
+    overflow-x: hidden;
   }
 }

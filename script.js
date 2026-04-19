@@ -43,6 +43,7 @@ const produtosRegulares = [
   { id: "hamburguer", nome: "Hamburguer", disponivel: true },
   { id: "x-tudo", nome: "X-Tudo", disponivel: true },
   { id: "adicionais", nome: "Adicionais", disponivel: true },
+  { id: "cachorro-quente", nome: "Cachorro Quente", disponivel: true },
   { id: "refri-1l", nome: "Refrigerante 1L", disponivel: true },
   { id: "refri-lata", nome: "Refrigerante Lata", disponivel: true }
 ];
@@ -126,6 +127,16 @@ function abrirModalRefrigerante(tamanho, preco, id) {
 
   refriTemp = { tamanho, preco, id };
   document.getElementById("modal-refrigerante").classList.add("active");
+  
+  // Lógica para retirar Fanta de 1L
+  const selectSabor = document.getElementById("sabor-refri");
+  const fantaOption = selectSabor.querySelector('option[value="Fanta"]');
+  if (tamanho === "1L" && fantaOption) {
+    fantaOption.style.display = "none";
+  } else if (fantaOption) {
+    fantaOption.style.display = "block";
+  }
+
   document.getElementById("sabor-refri").value = "";
 }
 
@@ -217,6 +228,41 @@ function confirmarPastel() {
   render();
 }
 
+function abrirModalCachorro() {
+  if (!produtoEstaDisponivel("cachorro-quente")) {
+    alert("Este item está esgotado no momento.");
+    return;
+  }
+  document.getElementById("modal-cachorro").classList.add("active");
+}
+
+function fecharModalCachorro() {
+  document.getElementById("modal-cachorro").classList.remove("active");
+  const select = document.getElementById("dog-opcao");
+  if (select) select.value = "Completo";
+}
+
+function confirmarCachorro() {
+  if (!produtoEstaDisponivel("cachorro-quente")) {
+    alert("Este item está esgotado no momento.");
+    fecharModalCachorro();
+    return;
+  }
+
+  const opcao = document.getElementById("dog-opcao").value;
+  const descricao = `Cachorro Quente (${opcao})`;
+  const qtd = quantidades["cachorro-quente"] || 1;
+
+  for (let i = 0; i < qtd; i++) {
+    carrinho.push({ nome: descricao, preco: 8.00 });
+  }
+
+  quantidades["cachorro-quente"] = 1;
+  document.getElementById("qtd-cachorro-quente").innerText = 1;
+  fecharModalCachorro();
+  render();
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   const modalRefrigerante = document.getElementById("modal-refrigerante");
   const modalPastel = document.getElementById("modal-pastel");
@@ -233,6 +279,15 @@ document.addEventListener("DOMContentLoaded", function() {
     modalPastel.addEventListener("click", function(e) {
       if (e.target === this) {
         fecharModalPastel();
+      }
+    });
+  }
+
+  const modalCachorro = document.getElementById("modal-cachorro");
+  if (modalCachorro) {
+    modalCachorro.addEventListener("click", function(e) {
+      if (e.target === this) {
+        fecharModalCachorro();
       }
     });
   }
