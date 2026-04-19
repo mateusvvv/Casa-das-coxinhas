@@ -598,7 +598,6 @@ function finalizar() {
   msg += "\n*RESUMO DO PEDIDO:*\n";
   msg += `Subtotal: ${formatarMoeda(subtotal)}\n`;
   msg += `Taxa de Entrega: ${formatarMoeda(taxa)}\n`;
-  msg += `TOTAL: ${formatarMoeda(total)}\n\n`;
   msg += `*TOTAL: ${formatarMoeda(total)}*\n\n`;
 
   msg += "*FORMA DE PAGAMENTO ESCOLHIDA:*\n";
@@ -644,9 +643,9 @@ function finalizar() {
   const isAgendamento = modoEntrega === "retirada" || temEvento;
 
   if (formaPagamento !== "especie" || isAgendamento) {
-    msg += "══════════════\n";
-    msg += "*AVISO IMPORTANTE*\n";
-    msg += "══════════════\n\n";
+    msg += "══════════════════════════\n";
+    msg += "      *AVISO IMPORTANTE*\n";
+    msg += "══════════════════════════\n\n";
 
     if (isAgendamento) {
       msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";

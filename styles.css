@@ -538,7 +538,8 @@ button.finalizar:disabled {
 }
 
 .bairro-selector select,
-.bairro-selector input {
+.bairro-selector input,
+.bairro-selector textarea {
   width: 100%;
   padding: 10px;
   border-radius: 6px;
@@ -548,6 +549,8 @@ button.finalizar:disabled {
   font-size: 0.95em;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: inherit;
+  resize: vertical;
 }
 
 .bairro-selector select:hover,
