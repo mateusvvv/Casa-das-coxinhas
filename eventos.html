@@ -260,7 +260,15 @@ placeholder="Ex: Próximo ao mercado">
 <!-- RETIRADA -->
 <div id="retirada-info" class="bairro-selector" hidden>
 <label>Retirada no estabelecimento:</label>
-<div>Cohab 3, Rua 5, nº 28</div>
+<div style="margin-bottom: 10px;">Cohab 3, Rua 5, nº 28</div>
+<div><a href="https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7" target="_blank" rel="noreferrer">Ver no mapa</a></div>
+<div style="margin-top: 15px;">
+  <label for="retirada-dia">Dia da Retirada:</label>
+  <input type="date" id="retirada-dia" oninput="atualizarEstadoFinalizar()" />
+  <label for="retirada-horario" style="margin-top: 10px;">Horário da Retirada:</label>
+  <input type="time" id="retirada-horario" oninput="atualizarEstadoFinalizar()" />
+  <small style="color: #FFB81C; display: block; margin-top: 5px;">*Sujeito a disponibilidade de agenda.</small>
+</div>
 </div>
 
 <!-- PAGAMENTO -->

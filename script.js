@@ -335,9 +335,14 @@ function atualizarEstadoFinalizar() {
     return;
   }
   const numeroPreenchido = numeroCasa ? numeroCasa.value.trim() !== "" : false;
+  
+  const diaRetirada = document.getElementById("retirada-dia")?.value;
+  const horaRetirada = document.getElementById("retirada-horario")?.value;
+  
+  const retiradaValida = modoEntrega === "retirada" && diaRetirada && horaRetirada;
+  const entregaValida = modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido;
 
-  const enderecoValido = modoEntrega === "retirada" || (modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido);
-  botaoFinalizar.disabled = carrinho.length === 0 || !enderecoValido || !formaPagamento;
+  botaoFinalizar.disabled = carrinho.length === 0 || !(retiradaValida || entregaValida) || !formaPagamento;
 }
 
 function atualizarModoEntrega() {
@@ -501,6 +506,15 @@ function atualizarTaxa() {
   render();
 }
 
+function formatarItensParaWhatsApp(itensAgrupados) {
+  let texto = "";
+  Object.keys(itensAgrupados).forEach((nome) => {
+    let item = itensAgrupados[nome];
+    texto += `${nome} (x${item.quantidade}) - ${formatarMoeda(item.preco * item.quantidade)}\n`;
+  });
+  return texto;
+}
+
 function finalizar() {
   if (carrinho.length === 0) {
     return;
@@ -539,10 +553,7 @@ function finalizar() {
   let msg = "*PEDIDO - CASA DAS COXINHAS*\n\n";
 
   msg += "*ITENS DO PEDIDO:*\n";
-  Object.keys(itensAgrupados).forEach((nome) => {
-    let item = itensAgrupados[nome];
-    msg += `${nome} (x${item.quantidade}) - ${formatarMoeda(item.preco * item.quantidade)}\n`;
-  });
+  msg += formatarItensParaWhatsApp(itensAgrupados);
 
   msg += "\n*RESUMO DO PEDIDO:*\n";
   msg += `Subtotal: ${formatarMoeda(subtotal)}\n`;
@@ -562,10 +573,16 @@ function finalizar() {
   msg += "\n";
 
   if (modoEntrega === "retirada") {
+    const dia = document.getElementById("retirada-dia").value;
+    const hora = document.getElementById("retirada-horario").value;
+    const dataFormatada = dia.split('-').reverse().join('/');
+
     msg += "*RETIRADA NO ESTABELECIMENTO:*\n";
+    msg += `Data: ${dataFormatada}\n`;
+    msg += `Horário: ${hora}\n`;
     msg += "Endereço: Cohab 3, Rua 5, nº 28\n";
     msg += "Link: https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7\n";
-    msg += "Obs: Informe o horário desejado no WhatsApp.\n\n";
+    msg += "Obs: Sujeito a disponibilidade de agenda.\n\n";
   } else {
     msg += "*ENDEREÇO DE ENTREGA:*\n";
     msg += `Bairro: ${bairroSelecionado}\n`;
