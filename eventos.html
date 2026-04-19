@@ -81,11 +81,11 @@
 <img class="header-logo" src="logo.png" alt="Logo Casa das Coxinhas">
 </div>
 
-<div class="horario-funcionamento">
+<div class="horario-funcionamento" id="header-loja">
 <div class="horario-content">
-<span class="horario-icon">🕖</span>
+<span class="horario-icon" id="header-loja-icon">🕖</span>
 <span class="horario-texto">
-<strong>Estamos Abertos!</strong><br>
+<strong id="header-loja-status">Estamos Abertos!</strong><br>
 Quarta a Domingo | 18h às 23h
 </span>
 </div>
@@ -250,6 +250,15 @@ type="text"
 id="numero-casa"
 placeholder="Ex: 123"
 oninput="atualizarEstadoFinalizar()">
+</div>
+
+<div id="localizacao-section" class="bairro-selector">
+<label>Localização Geográfica:</label>
+<button type="button" class="btn-location" onclick="obterLocalizacao()">
+<span>📍</span> Capturar minha localização atual
+</button>
+<input type="hidden" id="link-localizacao" value="">
+<p id="status-localizacao" style="font-size: 0.85em; margin-top: 5px; color: #cbd5e1;"></p>
 </div>
 
 <!-- REFERENCIA -->

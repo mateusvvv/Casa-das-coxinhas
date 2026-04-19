@@ -22,6 +22,7 @@ let refriTemp = { tamanho: "", preco: 0, id: "" };
 let formaPagamento = "";
 let availabilityUnsubscribe = null;
 let adminAutenticado = false;
+let lojaAberta = true;
 
 const ADMIN_EMAIL = "edmilsonjosedasilva14@gmail.com";
 const AVAILABILITY_STORAGE_KEY = "produtosAvailability";
@@ -86,15 +87,21 @@ function aplicarAvailabilityData(data) {
     data = coletarAvailabilityData();
   }
 
+  // Suporta o novo formato { itens: {...}, lojaAberta: bool } ou o formato antigo
+  const itens = data.itens || data;
+  if (data.lojaAberta !== undefined) {
+    lojaAberta = data.lojaAberta;
+  }
+
   produtosRegulares.forEach((produto) => {
-    if (data[produto.id] !== undefined) {
-      produto.disponivel = !!data[produto.id];
+    if (itens[produto.id] !== undefined) {
+      produto.disponivel = !!itens[produto.id];
     }
   });
 
   produtosEventos.oleo.forEach((produto) => {
-    if (data[produto.id] !== undefined) {
-      produto.disponivel = !!data[produto.id];
+    if (itens[produto.id] !== undefined) {
+      produto.disponivel = !!itens[produto.id];
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -102,8 +109,8 @@ function aplicarAvailabilityData(data) {
   });
 
   produtosEventos.forno.forEach((produto) => {
-    if (data[produto.id] !== undefined) {
-      produto.disponivel = !!data[produto.id];
+    if (itens[produto.id] !== undefined) {
+      produto.disponivel = !!itens[produto.id];
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -116,6 +123,26 @@ function aplicarAvailabilityData(data) {
   aplicarDisponibilidadeCardapioRegular();
   atualizarPaginaEventos();
   atualizarPainelAdminPage();
+  atualizarStatusLojaUI();
+}
+
+function atualizarStatusLojaUI() {
+  const statusHeader = document.getElementById("header-loja");
+  const statusTexto = document.getElementById("header-loja-status");
+  const statusIcon = document.getElementById("header-loja-icon");
+
+  if (statusHeader && statusTexto && statusIcon) {
+    if (lojaAberta) {
+      statusHeader.classList.remove("fechado");
+      statusTexto.innerText = "Estamos Abertos!";
+      statusIcon.innerText = "🕖";
+    } else {
+      statusHeader.classList.add("fechado");
+      statusTexto.innerText = "Estamos Fechados";
+      statusIcon.innerText = "🛑";
+    }
+  }
+  atualizarEstadoFinalizar();
 }
 
 function abrirModalRefrigerante(tamanho, preco, id) {
@@ -320,6 +347,36 @@ window.addEventListener("click", function(e) {
   if (e.target === modal) fecharModalDev();
 });
 
+function obterLocalizacao() {
+  const status = document.getElementById("status-localizacao");
+  const linkInput = document.getElementById("link-localizacao");
+
+  if (!navigator.geolocation) {
+    alert("Seu navegador não suporta geolocalização.");
+    return;
+  }
+
+  status.innerText = "⏳ Obtendo sua localização...";
+  status.style.color = "#FFA500";
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const url = `https://www.google.com/maps?q=${lat},${lng}`;
+      linkInput.value = url;
+      status.innerText = "✅ Localização capturada com sucesso!";
+      status.style.color = "#16a34a";
+    },
+    (error) => {
+      console.error(error);
+      status.innerText = "❌ Erro ao obter localização. Verifique as permissões do seu navegador.";
+      status.style.color = "#fca5a5";
+    },
+    { enableHighAccuracy: true }
+  );
+}
+
 function alterarQtd(id, valor) {
   if (!produtoEstaDisponivel(id)) {
     return;
@@ -367,7 +424,7 @@ function atualizarEstadoFinalizar() {
   const retiradaValida = modoEntrega === "retirada" && diaRetirada && horaRetirada;
   const entregaValida = modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido;
 
-  botaoFinalizar.disabled = carrinho.length === 0 || !(retiradaValida || entregaValida) || !formaPagamento;
+  botaoFinalizar.disabled = !lojaAberta || carrinho.length === 0 || !(retiradaValida || entregaValida) || !formaPagamento;
 }
 
 function atualizarModoEntrega() {
@@ -375,6 +432,7 @@ function atualizarModoEntrega() {
   const bairroSection = document.getElementById("bairro-section");
   const numeroCasaSection = document.getElementById("numero-casa-section");
   const pontoReferenciaSection = document.getElementById("ponto-referencia-section");
+  const localizacaoSection = document.getElementById("localizacao-section");
   const retiradaInfoSection = document.getElementById("retirada-info");
 
   if (modoEntrega === "retirada") {
@@ -383,12 +441,14 @@ function atualizarModoEntrega() {
     bairroSection.hidden = true;
     numeroCasaSection.hidden = true;
     pontoReferenciaSection.hidden = true;
+    if (localizacaoSection) localizacaoSection.hidden = true;
     retiradaInfoSection.hidden = false;
     abrirModalRetirada();
   } else {
     bairroSection.hidden = false;
     numeroCasaSection.hidden = false;
     pontoReferenciaSection.hidden = false;
+    if (localizacaoSection) localizacaoSection.hidden = false;
     retiradaInfoSection.hidden = true;
   }
   render();
@@ -587,6 +647,7 @@ function finalizar() {
 
   const numeroCasa = document.getElementById("numero-casa").value.trim();
   const pontoReferencia = document.getElementById("ponto-referencia").value.trim();
+  const linkLocalizacao = document.getElementById("link-localizacao")?.value;
   const obsPedido = document.getElementById("obs-pedido")?.value.trim();
 
   if (modoEntrega === "entrega" && !numeroCasa) {
@@ -651,17 +712,20 @@ function finalizar() {
     if (pontoReferencia) {
       msg += `Referência: ${pontoReferencia}\n`;
     }
+    if (linkLocalizacao) {
+      msg += `Localização (Maps): ${linkLocalizacao}\n`;
+    }
     msg += "Prazo médio de entrega do pedido: 35 a 50 minutos\n";
-    msg += "Obs: Envie a localização em tempo atual para facilitar a entrega\n\n";
+    msg += "\n";
   }
 
   const temEvento = carrinho.some(item => item.nome.includes("Cardápio de Eventos"));
   const isAgendamento = modoEntrega === "retirada" || temEvento;
 
   if (formaPagamento !== "especie" || isAgendamento) {
-    msg += "══════════════════════════\n";
-    msg += "      *AVISO IMPORTANTE*\n";
-    msg += "══════════════════════════\n\n";
+    msg += "═════════════════\n";
+    msg += "*AVISO IMPORTANTE*\n";
+    msg += "═════════════════\n\n";
 
     if (isAgendamento) {
       msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
@@ -733,6 +797,19 @@ function atualizarPainelAdminPage() {
   const painelCardapio = document.getElementById("painel-cardapio-regular");
   const painelOleo = document.getElementById("painel-eventos-oleo");
   const painelForno = document.getElementById("painel-eventos-forno");
+  const painelStatus = document.getElementById("painel-status-loja");
+
+  if (painelStatus) {
+    painelStatus.innerHTML = `
+      <div class="painel-secao">
+        <h4>Status de Funcionamento</h4>
+        <div class="painel-produto ${lojaAberta ? "" : "indisponivel"}">
+          <input type="checkbox" id="check-loja-aberta" ${lojaAberta ? "checked" : ""}>
+          <label for="check-loja-aberta">${lojaAberta ? "Site Aberto para Pedidos" : "Site Fechado para Pedidos"}</label>
+        </div>
+      </div>
+    `;
+  }
 
   if (!painelCardapio || !painelOleo || !painelForno) {
     return;
@@ -964,6 +1041,9 @@ function finalizarEventos() {
 async function salvarAvailability() {
   const data = {};
 
+  const checkLoja = document.getElementById("check-loja-aberta");
+  const novaLojaAberta = checkLoja ? checkLoja.checked : lojaAberta;
+
   produtosRegulares.forEach((produto) => {
     const checkbox = document.getElementById(`check-${produto.id}`);
     data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
@@ -986,7 +1066,7 @@ async function salvarAvailability() {
 
   if (window.firebaseService) {
     try {
-      await window.firebaseService.saveAvailability(data);
+      await window.firebaseService.saveAvailability(data, novaLojaAberta);
       alert("Disponibilidade dos produtos salva com sucesso!");
       return;
     } catch (error) {

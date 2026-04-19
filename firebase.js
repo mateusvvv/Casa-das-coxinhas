@@ -55,13 +55,14 @@ window.firebaseService = {
       return null;
     }
 
-    return snapshot.data().itens || {};
+    return snapshot.data() || { itens: {}, lojaAberta: true };
   },
 
-  async saveAvailability(data) {
+  async saveAvailability(data, lojaAberta) {
     await firebaseReady;
     await setDoc(availabilityRef, {
       itens: data,
+      lojaAberta: lojaAberta,
       atualizadoEm: new Date().toISOString()
     }, { merge: true });
   },
@@ -75,7 +76,7 @@ window.firebaseService = {
         return;
       }
 
-      callback(snapshot.data().itens || {});
+      callback(snapshot.data() || {});
     }, (error) => {
       console.error("Erro ao ouvir disponibilidade em tempo real:", error);
     });
