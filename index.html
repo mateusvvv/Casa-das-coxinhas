@@ -452,48 +452,21 @@
 
 <div id="modal-cachorro" class="modal-overlay">
   <div class="modal">
-    <h2 style="text-align: center; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; margin-bottom: 20px;">Cachorro Quente</h2>
-    <p style="text-align: center; color: #cbd5e1; margin-bottom: 20px;">Selecione o que deseja no seu lanche:</p>
+    <h2 style="text-align: center; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; margin-bottom: 20px;">🌭 Cachorro Quente</h2>
+    <p style="text-align: center; color: #cbd5e1; margin-bottom: 20px;">Escolha a base do seu lanche:</p>
 
-    <div class="modal-group" style="background: rgba(196, 30, 58, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-      <label class="checkbox-salgado">
-        <input type="checkbox" id="dog-completo" checked onchange="toggleDogCompleto(this.checked)">
-        <span class="checkbox-custom"></span> <strong>COMPLETO (Tudo incluso)</strong>
-      </label>
+    <div class="modal-group">
+      <select id="dog-base-select" style="font-size: 1.1em; padding: 12px;">
+        <option value="Completo">Completo (Com tudo)</option>
+        <option value="Sem Verduras">Sem Verduras (Só molhos)</option>
+        <option value="Simples">Simples (Só pão e carne)</option>
+      </select>
     </div>
 
     <div class="modal-group">
-      <label style="margin-bottom: 15px; display: block;">Ou selecione os itens:</label>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Tomate" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Tomate</span>
-        </label>
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Cebola" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Cebola</span>
-        </label>
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Milho Verde" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Milho</span>
-        </label>
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Ervilha" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Ervilha</span>
-        </label>
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Catchup" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Catchup</span>
-        </label>
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Mostarda" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Mostarda</span>
-        </label>
-        <label class="checkbox-salgado">
-          <input type="checkbox" class="dog-check" value="Maionese" checked onchange="document.getElementById('dog-completo').checked = false">
-          <span class="checkbox-custom"></span> <span>Maionese</span>
-        </label>
-      </div>
+      <label for="dog-obs" style="color: #FFB81C;">Deseja retirar ou adicionar algo?</label>
+      <textarea id="dog-obs" placeholder="Ex: Sem cebola, Sem tomate, Capricha no milho..." rows="3" 
+        style="width: 100%; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-family: inherit; resize: none;"></textarea>
     </div>
 
     <div class="modal-buttons">

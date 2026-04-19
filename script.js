@@ -237,15 +237,8 @@ function abrirModalCachorro() {
 
 function fecharModalCachorro() {
   document.getElementById("modal-cachorro").classList.remove("active");
-  document.getElementById("dog-completo").checked = true;
-  document.querySelectorAll(".dog-check").forEach(c => c.checked = true);
-}
-
-function toggleDogCompleto(isCompleto) {
-  const checks = document.querySelectorAll(".dog-check");
-  if (isCompleto) {
-    checks.forEach(c => c.checked = true);
-  }
+  document.getElementById("dog-base-select").value = "Completo";
+  document.getElementById("dog-obs").value = "";
 }
 
 function confirmarCachorro() {
@@ -255,17 +248,11 @@ function confirmarCachorro() {
     return;
   }
 
-  const completo = document.getElementById("dog-completo").checked;
-  let descricao = "";
-
-  if (completo) {
-    descricao = "Cachorro Quente (Completo)";
-  } else {
-    const selecionados = Array.from(document.querySelectorAll(".dog-check:checked")).map(c => c.value);
-    descricao = selecionados.length > 0 
-      ? `Cachorro Quente (${selecionados.join(", ")})` 
-      : "Cachorro Quente (Sem complementos)";
-  }
+  const base = document.getElementById("dog-base-select").value;
+  const obs = document.getElementById("dog-obs").value.trim();
+  
+  const detalhes = obs ? `${base} - Obs: ${obs}` : base;
+  const descricao = `Cachorro Quente (${detalhes})`;
 
   const qtd = quantidades["cachorro-quente"] || 1;
   for (let i = 0; i < qtd; i++) {

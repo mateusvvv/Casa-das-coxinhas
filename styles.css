@@ -221,7 +221,7 @@ header p {
 }
 
 .produto h3 {
-  font-size: 1.55em;
+  font-size: 1.7em;
   margin-bottom: 8px;
   color: #FFB81C;
 }
@@ -739,7 +739,7 @@ button.finalizar:disabled {
   }
 
   .produto h3 {
-    font-size: 0.95em;
+    font-size: 1.25em;
     min-height: 40px;
   }
 
