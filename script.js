@@ -576,13 +576,15 @@ function finalizar() {
     msg += "Obs: Envie a localização em tempo atual para facilitar a entrega\n\n";
   }
 
-  msg += "══════════════\n";
-  msg += "*AVISO IMPORTANTE*\n";
-  msg += "══════════════\n\n";
-  if (formaPagamento === "pix") {
-    msg += "O pedido será confirmado após o pagamento via PIX\n\n";
-  } else if (formaPagamento === "credito" || formaPagamento === "debito") {
-    msg += "O entregador irá levar a maquineta\n\n";
+  if (formaPagamento !== "especie") {
+    msg += "══════════════\n";
+    msg += "*AVISO IMPORTANTE*\n";
+    msg += "══════════════\n\n";
+    if (formaPagamento === "pix") {
+      msg += "O pedido será confirmado após o pagamento via PIX\n\n";
+    } else if (formaPagamento === "credito" || formaPagamento === "debito") {
+      msg += "O entregador irá levar a maquineta\n\n";
+    }
   }
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));
 }
