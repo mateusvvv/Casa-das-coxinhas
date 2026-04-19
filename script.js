@@ -498,7 +498,7 @@ function finalizar() {
     msg += "Chave PIX: 81982116454\n";
     msg += "Titular: Edmilson José da Silva\n";
   } else if (formaPagamento === "credito") {
-    msg += "Obs: No cartão de crédito há acréscimo da maquineta\n";
+    msg += "Obs: No cartão de crédito tem acréscimo da maquineta\n";
   } else if (formaPagamento === "debito") {
     msg += "Obs: No cartão de débito, o entregador irá levar a maquineta\n";
   }
@@ -510,26 +510,23 @@ function finalizar() {
     msg += "Link: https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7\n";
     msg += "Obs: Informe o horário desejado no WhatsApp.\n\n";
   } else {
-    msg += "*ENDERECO DE ENTREGA:*\n";
+    msg += "*ENDEREÇO DE ENTREGA:*\n";
     msg += `Bairro: ${bairroSelecionado}\n`;
-    msg += `Numero: ${numeroCasa}\n`;
+    msg += `Número: ${numeroCasa}\n`;
     if (pontoReferencia) {
-      msg += `Referencia: ${pontoReferencia}\n`;
+      msg += `Referência: ${pontoReferencia}\n`;
     }
-    msg += "Obs: Envie localizacao em tempo real para facilitar a entrega\n\n";
+    msg += "Obs: Envie a localização em tempo atual para facilitar a entrega\n\n";
   }
 
-  msg += "═══════════════════════════════════════\n";
-  msg += "*AVISO IMPORTANTE - LEIA COM ATENÇÃO*\n";
-  msg += "═══════════════════════════════════════\n\n";
+  msg += "══════════════\n";
+  msg += "*AVISO IMPORTANTE*\n";
+  msg += "══════════════\n\n";
   if (formaPagamento === "pix") {
-    msg += "O PEDIDO SERÁ CONFIRMADO APÓS O ENVIO DO COMPROVANTE\n\n";
+    msg += "O pedido será confirmado após o pagamento via PIX\n\n";
   } else if (formaPagamento === "credito" || formaPagamento === "debito") {
     msg += "O entregador irá levar a maquineta\n\n";
   }
-  msg += "═══════════════════════════════════════\n\n";
-  msg += "Obrigado por escolher a Casa da Coxinha!";
-
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));
 }
 

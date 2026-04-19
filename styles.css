@@ -1250,3 +1250,121 @@ button.finalizar:disabled {
     grid-template-columns: 1fr;
   }
 }
+/* ===== CORREÇÃO DE ESPAÇAMENTO DOS PRODUTOS ===== */
+/* COLE NO FINAL DO styles.css */
+
+.produto{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  min-height:340px;
+}
+
+.produto h3{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1.3;
+  margin-bottom:10px;
+}
+
+.produto p{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  margin-bottom:12px;
+}
+
+.preco{
+  margin-bottom:14px;
+  text-align:center;
+}
+
+.quantidade-selector{
+  margin-bottom:14px;
+}
+
+button.adicionar{
+  margin-top:auto;
+  width:100%;
+}
+
+/* MOBILE */
+@media (max-width:768px){
+
+  .produto{
+    min-height:auto;
+  }
+
+  .produto h3,
+  .produto p{
+    min-height:auto;
+  }
+
+}
+
+/* 📌 AVISO EVENTOS */
+.aviso-evento {
+  padding: 30px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.aviso-box {
+  max-width: 800px;
+  width: 100%;
+  background: linear-gradient(135deg, #fff8e1, #ffe082);
+  border: 2px solid #ff9800;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  animation: subir 0.6s ease;
+}
+
+.aviso-box h3 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #e65100;
+}
+
+.aviso-box p {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.aviso-box strong {
+  color: #d84315;
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .aviso-box {
+    padding: 20px;
+  }
+
+  .aviso-box h3 {
+    font-size: 22px;
+  }
+
+  .aviso-box p {
+    font-size: 16px;
+  }
+}
