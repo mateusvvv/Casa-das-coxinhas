@@ -87,7 +87,7 @@ function aplicarAvailabilityData(data) {
     data = coletarAvailabilityData();
   }
 
-  // Suporta o novo formato { itens: {...}, lojaAberta: bool } ou o formato antigo
+  // Suporta o novo formato do Firebase
   const itens = data.itens || data;
   if (data.lojaAberta !== undefined) {
     lojaAberta = data.lojaAberta;
@@ -127,21 +127,17 @@ function aplicarAvailabilityData(data) {
 }
 
 function atualizarStatusLojaUI() {
-  const statusHeader = document.getElementById("header-loja");
-  const statusTexto = document.getElementById("header-loja-status");
-  const statusIcon = document.getElementById("header-loja-icon");
+  const statusHeader = document.querySelectorAll("#header-loja");
+  const statusTexto = document.querySelectorAll("#header-loja-status");
+  const statusIcon = document.querySelectorAll("#header-loja-icon");
 
-  if (statusHeader && statusTexto && statusIcon) {
-    if (lojaAberta) {
-      statusHeader.classList.remove("fechado");
-      statusTexto.innerText = "Estamos Abertos!";
-      statusIcon.innerText = "🕖";
-    } else {
-      statusHeader.classList.add("fechado");
-      statusTexto.innerText = "Estamos Fechados";
-      statusIcon.innerText = "🛑";
-    }
-  }
+  const text = lojaAberta ? "Estamos Abertos!" : "Estamos Fechados";
+  const icon = lojaAberta ? "🕖" : "🛑";
+
+  statusHeader.forEach(el => el.classList.toggle("fechado", !lojaAberta));
+  statusTexto.forEach(el => el.innerText = text);
+  statusIcon.forEach(el => el.innerText = icon);
+
   atualizarEstadoFinalizar();
 }
 
@@ -347,36 +343,6 @@ window.addEventListener("click", function(e) {
   if (e.target === modal) fecharModalDev();
 });
 
-function obterLocalizacao() {
-  const status = document.getElementById("status-localizacao");
-  const linkInput = document.getElementById("link-localizacao");
-
-  if (!navigator.geolocation) {
-    alert("Seu navegador não suporta geolocalização.");
-    return;
-  }
-
-  status.innerText = "⏳ Obtendo sua localização...";
-  status.style.color = "#FFA500";
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      const url = `https://www.google.com/maps?q=${lat},${lng}`;
-      linkInput.value = url;
-      status.innerText = "✅ Localização capturada com sucesso!";
-      status.style.color = "#16a34a";
-    },
-    (error) => {
-      console.error(error);
-      status.innerText = "❌ Erro ao obter localização. Verifique as permissões do seu navegador.";
-      status.style.color = "#fca5a5";
-    },
-    { enableHighAccuracy: true }
-  );
-}
-
 function alterarQtd(id, valor) {
   if (!produtoEstaDisponivel(id)) {
     return;
@@ -432,7 +398,6 @@ function atualizarModoEntrega() {
   const bairroSection = document.getElementById("bairro-section");
   const numeroCasaSection = document.getElementById("numero-casa-section");
   const pontoReferenciaSection = document.getElementById("ponto-referencia-section");
-  const localizacaoSection = document.getElementById("localizacao-section");
   const retiradaInfoSection = document.getElementById("retirada-info");
 
   if (modoEntrega === "retirada") {
@@ -441,14 +406,12 @@ function atualizarModoEntrega() {
     bairroSection.hidden = true;
     numeroCasaSection.hidden = true;
     pontoReferenciaSection.hidden = true;
-    if (localizacaoSection) localizacaoSection.hidden = true;
     retiradaInfoSection.hidden = false;
     abrirModalRetirada();
   } else {
     bairroSection.hidden = false;
     numeroCasaSection.hidden = false;
     pontoReferenciaSection.hidden = false;
-    if (localizacaoSection) localizacaoSection.hidden = false;
     retiradaInfoSection.hidden = true;
   }
   render();
@@ -647,7 +610,6 @@ function finalizar() {
 
   const numeroCasa = document.getElementById("numero-casa").value.trim();
   const pontoReferencia = document.getElementById("ponto-referencia").value.trim();
-  const linkLocalizacao = document.getElementById("link-localizacao")?.value;
   const obsPedido = document.getElementById("obs-pedido")?.value.trim();
 
   if (modoEntrega === "entrega" && !numeroCasa) {
@@ -712,9 +674,6 @@ function finalizar() {
     if (pontoReferencia) {
       msg += `Referência: ${pontoReferencia}\n`;
     }
-    if (linkLocalizacao) {
-      msg += `Localização (Maps): ${linkLocalizacao}\n`;
-    }
     msg += "Prazo médio de entrega do pedido: 35 a 50 minutos\n";
     msg += "\n";
   }
@@ -723,9 +682,9 @@ function finalizar() {
   const isAgendamento = modoEntrega === "retirada" || temEvento;
 
   if (formaPagamento !== "especie" || isAgendamento) {
-    msg += "═════════════════\n";
-    msg += "*AVISO IMPORTANTE*\n";
-    msg += "═════════════════\n\n";
+    msg += "══════════════════════════\n";
+    msg += "      *AVISO IMPORTANTE*\n";
+    msg += "══════════════════════════\n\n";
 
     if (isAgendamento) {
       msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";

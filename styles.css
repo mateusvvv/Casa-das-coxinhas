@@ -135,6 +135,12 @@ header p {
   border-bottom: 2px solid #9ca3af;
 }
 
+.horario-funcionamento.fechado {
+  background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
+  border-top: 2px solid #9ca3af;
+  border-bottom: 2px solid #9ca3af;
+}
+
 .horario-content {
   display: flex;
   align-items: center;
@@ -233,7 +239,7 @@ header p {
 
 .produtos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -602,33 +608,6 @@ button.finalizar:disabled {
   box-shadow: 0 0 0 2px rgba(196, 30, 58, 0.2);
 }
 
-.btn-location {
-  background: #1e293b;
-  color: #fff;
-  border: 2px solid #334155;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-weight: bold;
-  transition: all 0.3s;
-  font-family: inherit;
-  margin-bottom: 5px;
-}
-
-.btn-location:hover {
-  border-color: #FFA500;
-  background: #2d3748;
-}
-
-.btn-location span {
-  font-size: 1.2em;
-}
-
 .btn-agendar-retirada {
   background: linear-gradient(135deg, #e65100 0%, #fb8c00 100%);
   color: #fff;
@@ -962,6 +941,7 @@ button.finalizar:disabled {
 
 .pagina-conteudo.active {
   display: block;
+  flex: 1;
 }
 
 .categoria-desc {
@@ -1173,7 +1153,7 @@ button.finalizar:disabled {
   }
   
   .produtos-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
