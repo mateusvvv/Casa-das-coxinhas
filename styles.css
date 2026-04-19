@@ -562,6 +562,11 @@ button.finalizar:disabled {
   box-shadow: 0 0 0 2px rgba(196, 30, 58, 0.2);
 }
 
+::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
 .modal-overlay {
   display: none;
   position: fixed;
