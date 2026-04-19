@@ -358,6 +358,23 @@ function alterarQtd(id, valor) {
   }
 }
 
+function toggleCarrinho(abrir) {
+  const cart = document.getElementById("carrinho");
+  const overlay = document.getElementById("carrinho-overlay");
+  if (!cart) return;
+
+  if (abrir) {
+    cart.classList.add("active");
+    if (overlay) overlay.classList.add("active");
+    document.body.style.overflow = "hidden"; // Trava o scroll da página de fundo
+    cart.scrollTop = 0; // Reseta o scroll do carrinho para o topo
+  } else {
+    cart.classList.remove("active");
+    if (overlay) overlay.classList.remove("active");
+    document.body.style.overflow = "auto"; // Libera o scroll ao fechar
+  }
+}
+
 function add(nome, preco, id) {
   if (!produtoEstaDisponivel(id)) {
     alert("Este item está esgotado no momento.");
@@ -475,51 +492,16 @@ function calcularResumoCarrinho() {
   };
 }
 
-function criarAtalhoCarrinhoMobile() {
-  if (!document.getElementById("mobile-cart-bar") && document.getElementById("carrinho")) {
-    const bar = document.createElement("button");
-    bar.id = "mobile-cart-bar";
-    bar.className = "mobile-cart-bar";
-    bar.type = "button";
-    bar.onclick = irParaCarrinho;
-    bar.innerHTML = `
-      <span class="mobile-cart-info">
-        <span class="mobile-cart-title">Carrinho</span>
-        <span class="mobile-cart-meta" id="mobile-cart-meta">0 itens</span>
-      </span>
-      <span class="mobile-cart-total" id="mobile-cart-total">R$ 0,00</span>
-    `;
-    document.body.appendChild(bar);
-  }
-}
-
-function atualizarAtalhoCarrinhoMobile() {
-  const bar = document.getElementById("mobile-cart-bar");
-  const meta = document.getElementById("mobile-cart-meta");
-  const total = document.getElementById("mobile-cart-total");
-
-  if (!bar || !meta || !total) {
-    return;
-  }
-
+function atualizarBadgeCarrinho() {
   const resumo = calcularResumoCarrinho();
-  const temItens = resumo.quantidade > 0;
-
-  meta.innerText = `${resumo.quantidade} ${resumo.quantidade === 1 ? "item" : "itens"}`;
-  total.innerText = formatarMoeda(resumo.total);
-  bar.classList.toggle("is-empty", !temItens);
+  
+  // Atualiza o badge do botão flutuante
+  const badge = document.getElementById("cart-badge");
+  if (badge) badge.innerText = resumo.quantidade;
 }
 
 function irParaCarrinho() {
-  const carrinhoElemento = document.getElementById("carrinho");
-  if (!carrinhoElemento) {
-    return;
-  }
-
-  carrinhoElemento.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  toggleCarrinho(true);
 }
 
 function render() {
@@ -532,7 +514,7 @@ function render() {
   if (carrinho.length === 0) {
     container.innerHTML = '<div class="carrinho-vazio">Nenhum item adicionado</div>';
     resumo.hidden = true;
-    atualizarAtalhoCarrinhoMobile();
+    atualizarBadgeCarrinho();
     atualizarEstadoFinalizar();
     return;
   }
@@ -570,7 +552,7 @@ function render() {
   document.getElementById("taxa").innerText = formatarMoeda(taxa);
   document.getElementById("total").innerText = formatarMoeda(total);
   resumo.hidden = false;
-  atualizarAtalhoCarrinhoMobile();
+  atualizarBadgeCarrinho();
   atualizarEstadoFinalizar();
 }
 
@@ -1123,8 +1105,7 @@ function logoutAdmin() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  criarAtalhoCarrinhoMobile();
-  atualizarAtalhoCarrinhoMobile();
+  atualizarBadgeCarrinho();
   carregarAvailability();
 
   if (document.getElementById("admin-login-box")) {

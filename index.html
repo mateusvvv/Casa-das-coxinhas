@@ -280,8 +280,14 @@
   </div>
   </div>
 
-  <div id="carrinho">
-    <h2>🛒 Carrinho</h2>
+  <!-- Overlay para fechar o carrinho ao clicar fora -->
+  <div id="carrinho-overlay" class="carrinho-overlay" onclick="toggleCarrinho(false)"></div>
+
+  <div id="carrinho" class="carrinho-drawer">
+    <div class="carrinho-header">
+      <h2>🛒 Meu Pedido</h2>
+      <button class="btn-fechar-carrinho" onclick="toggleCarrinho(false)">&times;</button>
+    </div>
     <div id="carrinho-itens" class="carrinho-vazio">Nenhum item adicionado</div>
     <div id="carrinho-resumo" class="carrinho-resumo" hidden>
       <div class="bairro-selector">
@@ -396,6 +402,12 @@
     <button class="finalizar" id="btn-finalizar" onclick="finalizar()" disabled>Finalizar Pedido</button>
   </div>
 </div>
+
+<!-- Botão Flutuante do Carrinho -->
+<button class="cart-fab" onclick="toggleCarrinho(true)" id="cart-fab">
+  <span class="cart-fab-icon">🛒</span>
+  <span class="cart-fab-badge" id="cart-badge">0</span>
+</button>
 
 <div id="modal-dev" class="modal-overlay">
   <div class="modal" style="text-align: center;">

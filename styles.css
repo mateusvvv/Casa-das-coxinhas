@@ -239,7 +239,7 @@ header p {
 
 .produtos-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 20px;
 }
 
@@ -344,30 +344,114 @@ button.adicionar:active {
   transform: scale(0.98);
 }
 
-#carrinho {
-  width: 400px;
-  background: rgba(15, 23, 42, 0.95);
-  border: 2px solid #c41e3a;
+/* CARRINHO ESTILO MODAL CENTRALIZADO */
+.carrinho-drawer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 550px;
+  max-width: 95%;
+  max-height: 85vh;
+  background: #0f172a;
+  z-index: 3000;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
   padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  max-height: calc(100vh - 40px);
   overflow-y: auto;
-  position: sticky;
-  top: 20px;
-  backdrop-filter: blur(10px);
-  scrollbar-width: thin;
-  scrollbar-color: #c41e3a #0f172a;
+  border-radius: 20px;
+  border: 2px solid #c41e3a;
+  opacity: 0;
+  visibility: hidden;
 }
 
-#carrinho h2 {
-  font-size: 1.6em;
-  color: #FFA500;
+.carrinho-drawer.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.carrinho-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 2999;
+  display: none;
+  backdrop-filter: blur(4px);
+}
+
+.carrinho-overlay.active {
+  display: block;
+}
+
+.carrinho-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
   border-bottom: 2px solid #c41e3a;
-  padding-bottom: 12px;
+  padding-bottom: 15px;
+}
+
+.btn-fechar-carrinho {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2em;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* BOTÃO FLUTUANTE */
+.cart-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 70px;
+  height: 70px;
+  background: #c41e3a;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 2500;
+  box-shadow: 0 10px 25px rgba(196, 30, 58, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.cart-fab:hover {
+  transform: scale(1.1);
+}
+
+.cart-fab-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #FFA500;
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+.carrinho-drawer h2 {
+  color: #FFA500;
+  margin: 0;
 }
 
 .carrinho-vazio {
@@ -424,11 +508,6 @@ button.adicionar:active {
   background: #a01830;
   transform: scale(1.1);
 }
-
-.mobile-cart-bar {
-  display: none;
-}
-
 .carrinho-resumo {
   background: #0f172a;
   padding: 15px;
@@ -755,11 +834,6 @@ button.finalizar:disabled {
     flex-direction: column;
   }
 
-  #carrinho {
-    width: 100%;
-    position: static;
-  }
-
   .produtos-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
@@ -854,7 +928,6 @@ button.finalizar:disabled {
   }
 
   #carrinho {
-    padding: 16px;
     box-shadow: none;
     backdrop-filter: none;
     border-width: 1px;
@@ -882,56 +955,6 @@ button.finalizar:disabled {
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 
-  .mobile-cart-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    z-index: 1500;
-    border: 1px solid rgba(255, 184, 28, 0.35);
-    border-radius: 14px;
-    background: rgba(15, 23, 42, 0.96);
-    color: #fff;
-    padding: 12px 14px;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
-    cursor: pointer;
-    text-align: left;
-  }
-
-  .mobile-cart-bar.is-empty {
-    opacity: 0.92;
-  }
-
-  .mobile-cart-info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-  }
-
-  .mobile-cart-title {
-    color: #FFA500;
-    font-weight: 800;
-    font-size: 0.95em;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .mobile-cart-meta {
-    color: #cbd5e1;
-    font-size: 0.9em;
-  }
-
-  .mobile-cart-total {
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.05em;
-    white-space: nowrap;
-  }
 }
 
 /* PÁGINAS */
@@ -1153,7 +1176,43 @@ button.finalizar:disabled {
   }
   
   .produtos-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .carrinho-drawer {
+    width: 95%;
+    max-height: 92vh;
+    top: 50%;
+    left: 50%;
+    border-radius: 15px;
+    transform: translate(-50%, -50%) scale(0.9);
+    padding: 15px;
+  }
+
+  .carrinho-drawer.active {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .carrinho-resumo {
+    margin: 10px 0;
+    padding: 12px;
+  }
+
+  .item-carrinho {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  .aviso-pagamento {
+    padding: 12px;
+    margin-top: 10px;
+  }
+  
+  .cart-fab {
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
   }
 }
 
@@ -1384,12 +1443,6 @@ footer {
   line-height: 1.6;
 }
 
-/* Ajuste para que o botão flutuante do carrinho não cubra os créditos no celular */
-@media (max-width: 768px) {
-  footer {
-    padding-bottom: 130px !important;
-  }
-}
 
 /* BOTÃO DE COMBO DE EVENTOS MELHORADO */
 .btn-adicionar-evento {

@@ -198,14 +198,18 @@ Selecionados: 0/2
 
 </div>
 
-<!-- CARRINHO -->
-<div id="carrinho">
+<!-- Overlay para fechar o carrinho ao clicar fora -->
+<div id="carrinho-overlay" class="carrinho-overlay" onclick="toggleCarrinho(false)"></div>
 
-<h2>🛒 Carrinho</h2>
+<div id="carrinho" class="carrinho-drawer">
+  <div class="carrinho-header">
+    <h2>🛒 Meu Pedido</h2>
+    <button class="btn-fechar-carrinho" onclick="toggleCarrinho(false)">&times;</button>
+  </div>
 
-<div id="carrinho-itens" class="carrinho-vazio">
-Nenhum item adicionado
-</div>
+  <div id="carrinho-itens" class="carrinho-vazio">
+    Nenhum item adicionado
+  </div>
 
 <div id="carrinho-resumo" class="carrinho-resumo" hidden>
 
@@ -335,6 +339,12 @@ Finalizar Pedido
 
 </div>
 </div>
+
+<!-- Botão Flutuante do Carrinho -->
+<button class="cart-fab" onclick="toggleCarrinho(true)" id="cart-fab">
+  <span class="cart-fab-icon">🛒</span>
+  <span class="cart-fab-badge" id="cart-badge">0</span>
+</button>
 
 <footer>
   <p>Site criado por <strong>Lucas</strong><br>Contato: <strong>81 98984-9687</strong></p>
