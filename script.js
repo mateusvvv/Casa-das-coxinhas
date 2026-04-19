@@ -619,6 +619,7 @@ function finalizar() {
     msg += `Data: ${dia}\n`;
     msg += `Horário: ${hora}\n`;
     msg += "Endereço: Cohab 3, Rua 5, nº 28\n";
+    msg += "Prazo médio de entrega: 35 a 50 minutos\n";
     msg += "Link: https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7\n";
     msg += "Obs: Sujeito a disponibilidade de agenda.\n\n";
   } else {
