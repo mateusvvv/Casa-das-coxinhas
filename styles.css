@@ -261,9 +261,10 @@ header p {
 }
 
 .produto h3 {
-  font-size: 1.7em;
+  font-size: 1.4em;
   margin-bottom: 8px;
   color: #FFB81C;
+  word-break: break-word;
 }
 
 .produto p {
@@ -892,7 +893,7 @@ button.finalizar:disabled {
   }
 
   .produto h3 {
-    font-size: 1.25em;
+    font-size: 0.95em;
     min-height: 40px;
   }
 

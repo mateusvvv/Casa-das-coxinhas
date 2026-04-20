@@ -279,7 +279,7 @@ function confirmarCachorro() {
 
   const qtd = quantidades["cachorro-quente"] || 1;
   for (let i = 0; i < qtd; i++) {
-    carrinho.push({ nome: descricao, preco: 8.00 });
+    carrinho.push({ nome: descricao, preco: 5.00 });
   }
 
   quantidades["cachorro-quente"] = 1;
@@ -404,7 +404,11 @@ function atualizarEstadoFinalizar() {
   const diaRetirada = document.getElementById("retirada-dia")?.value;
   const horaRetirada = document.getElementById("retirada-horario")?.value;
   
-  const retiradaValida = modoEntrega === "retirada" && diaRetirada && horaRetirada;
+  // No tradicional, não exige agendamento. No eventos (identificado pela presença do grid de óleo), exige.
+  const isPaginaEventos = !!document.getElementById("grid-oleo");
+  const agendamentoOK = isPaginaEventos ? (diaRetirada && horaRetirada) : true;
+
+  const retiradaValida = modoEntrega === "retirada" && agendamentoOK;
   const entregaValida = modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido;
 
   botaoFinalizar.disabled = !lojaAberta || carrinho.length === 0 || !(retiradaValida || entregaValida) || !formaPagamento;
@@ -424,7 +428,12 @@ function atualizarModoEntrega() {
     numeroCasaSection.hidden = true;
     pontoReferenciaSection.hidden = true;
     retiradaInfoSection.hidden = false;
-    abrirModalRetirada();
+    
+    // Só abre o modal de agendamento se for a página de eventos
+    const isPaginaEventos = !!document.getElementById("grid-oleo");
+    if (isPaginaEventos) {
+      abrirModalRetirada();
+    }
   } else {
     bairroSection.hidden = false;
     numeroCasaSection.hidden = false;
@@ -639,12 +648,14 @@ function finalizar() {
   msg += "\n";
 
   if (modoEntrega === "retirada") {
-    const dia = document.getElementById("retirada-dia").value.trim();
-    const hora = document.getElementById("retirada-horario").value.trim();
+    const diaInput = document.getElementById("retirada-dia");
+    const horaInput = document.getElementById("retirada-horario");
+    const dia = diaInput ? diaInput.value.trim() : "";
+    const hora = horaInput ? horaInput.value.trim() : "";
 
     msg += "*RETIRADA NO ESTABELECIMENTO:*\n";
-    msg += `Data: ${dia}\n`;
-    msg += `Horário: ${hora}\n`;
+    if (dia) msg += `Data: ${dia}\n`;
+    if (hora) msg += `Horário: ${hora}\n`;
     msg += "Endereço: Cohab 3, Rua 5, nº 28\n";
     msg += "Prazo médio de entrega do pedido: 35 a 50 minutos\n";
     msg += "Link: https://maps.app.goo.gl/fyMBq6BQkoCWQYBM7\n";
@@ -664,14 +675,14 @@ function finalizar() {
   const isAgendamento = modoEntrega === "retirada" || temEvento;
 
   if (formaPagamento !== "especie" || isAgendamento) {
-    msg += "══════════════════════════\n";
-    msg += "      *AVISO IMPORTANTE*\n";
-    msg += "══════════════════════════\n\n";
+    msg += "══════════════\n";
+    msg += "*AVISO IMPORTANTE*\n";
+    msg += "══════════════\n\n";
 
-    if (isAgendamento) {
+    if (formaPagamento === "pix") {
+      msg += "*O pedido será confirmado após o pagamento e ENVIO DO COMPROVANTE ou confirmação da equipe*.\n\n";
+    } else if (isAgendamento) {
       msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
-    } else if (formaPagamento === "pix") {
-      msg += "*PAGAMENTO VIA PIX:* Por favor, aguarde a nossa confirmação antes de realizar a transferência.\n\n";
     }
 
     if (formaPagamento === "credito" || formaPagamento === "debito") {
