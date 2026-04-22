@@ -1,0 +1,10 @@
+# Arquivos do Sistema
+Thumbs.db
+desktop.ini
+
+# IDEs (VS Code, etc)
+.vscode/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*

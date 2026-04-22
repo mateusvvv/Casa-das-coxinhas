@@ -130,14 +130,11 @@ function aplicarAvailabilityData(data) {
 function atualizarStatusLojaUI() {
   const statusHeader = document.querySelectorAll("#header-loja");
   const statusTexto = document.querySelectorAll("#header-loja-status");
-  const statusIcon = document.querySelectorAll("#header-loja-icon");
 
   const text = lojaAberta ? "Estamos Abertos!" : "Estamos Fechados";
-  const icon = lojaAberta ? "🕖" : "🛑";
 
   statusHeader.forEach(el => el.classList.toggle("fechado", !lojaAberta));
   statusTexto.forEach(el => el.innerText = text);
-  statusIcon.forEach(el => el.innerText = icon);
 
   atualizarEstadoFinalizar();
 }
