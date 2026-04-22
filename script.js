@@ -17,6 +17,7 @@ let taxasPorBairro = {
   "Batinga": 7.00
 };
 let bairroSelecionado = "";
+let localizacaoUsuario = "";
 let modoEntrega = "entrega";
 let refriTemp = { tamanho: "", preco: 0, id: "" };
 let formaPagamento = "";
@@ -343,6 +344,33 @@ window.addEventListener("click", function(e) {
   if (e.target === modal) fecharModalDev();
 });
 
+function obterLocalizacao() {
+  const btn = document.getElementById("btn-localizacao");
+  if (!("geolocation" in navigator)) {
+    alert("Seu navegador não suporta geolocalização.");
+    return;
+  }
+
+  btn.innerText = "⌛ Obtendo...";
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      localizacaoUsuario = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      btn.innerText = "📍 Localização Capturada!";
+      btn.style.background = "#16a34a";
+      alert("Localização capturada com sucesso! O link do GPS será enviado no WhatsApp.");
+    },
+    (error) => {
+      btn.innerText = "📍 Enviar Localização Atual";
+      let msgErro = "Não foi possível obter sua localização.";
+      if (error.code === 1) msgErro = "Por favor, autorize o acesso à localização no seu navegador nas configurações de privacidade.";
+      alert(msgErro);
+      console.error(error);
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
 function alterarQtd(id, valor) {
   if (!produtoEstaDisponivel(id)) {
     return;
@@ -666,6 +694,9 @@ function finalizar() {
     msg += `Número: ${numeroCasa}\n`;
     if (pontoReferencia) {
       msg += `Referência: ${pontoReferencia}\n`;
+    }
+    if (localizacaoUsuario) {
+      msg += `📍 Localização GPS: ${localizacaoUsuario}\n`;
     }
     msg += "Prazo médio de entrega do pedido: 35 a 50 minutos\n";
     msg += "\n";

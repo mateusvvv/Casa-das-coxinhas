@@ -326,6 +326,13 @@
         <label for="ponto-referencia">Ponto de Referência:</label>
         <input type="text" id="ponto-referencia" placeholder="Ex: Próximo ao mercado" />
       </div>
+      <div class="bairro-selector">
+        <label>Localização Exata (Opcional):</label>
+        <button type="button" id="btn-localizacao" class="btn-agendar-retirada" onclick="obterLocalizacao()" 
+          style="background: linear-gradient(135deg, #334155 0%, #1e293b 100%);">
+          📍 Enviar Localização Atual
+        </button>
+      </div>
       <div id="retirada-info" class="bairro-selector" hidden>
         <label>Retirada no estabelecimento:</label>
         <div style="margin-bottom: 10px;">Cohab 3, Rua 5, nº 28</div>
