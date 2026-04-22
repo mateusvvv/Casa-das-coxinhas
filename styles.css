@@ -1735,3 +1735,50 @@ button.adicionar{
   40% {transform: translateY(-15px);}
   60% {transform: translateY(-7px);}
 }
+
+/* ESTILOS DE STATUS NEON NO ADMIN */
+.status-neon-verde {
+  color: #22c55e !important;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+  animation: glowVerde 1.5s ease-in-out infinite alternate;
+}
+
+.status-neon-vermelho {
+  color: #ef4444 !important;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  animation: glowVermelho 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glowVerde {
+  from { text-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e; }
+  to { text-shadow: 0 0 15px #22c55e, 0 0 25px #22c55e; }
+}
+
+@keyframes glowVermelho {
+  from { text-shadow: 0 0 5px #ef4444, 0 0 10px #ef4444; }
+  to { text-shadow: 0 0 15px #ef4444, 0 0 25px #ef4444; }
+}
+
+/* TOAST NOTIFICAÇÃO */
+.toast-sucesso {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #16a34a;
+  color: white;
+  padding: 15px 35px;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  z-index: 9999;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-sucesso.mostrar {
+  transform: translateX(-50%) translateY(0);
+}

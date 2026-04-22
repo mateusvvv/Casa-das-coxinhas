@@ -768,7 +768,7 @@ function aplicarDisponibilidadeCardapioRegular() {
     const botaoAdicionar = card.querySelector("button.adicionar");
     if (botaoAdicionar) {
       botaoAdicionar.disabled = !disponivel;
-      botaoAdicionar.textContent = disponivel ? "Adicionar ao Carrinho" : "Item Esgotado";
+      botaoAdicionar.textContent = disponivel ? "Adicionar ao Carrinho" : "ITEM ESGOTADO";
     }
   });
 }
@@ -780,12 +780,17 @@ function atualizarPainelAdminPage() {
   const painelStatus = document.getElementById("painel-status-loja");
 
   if (painelStatus) {
+    const statusClass = lojaAberta ? "status-neon-verde" : "status-neon-vermelho";
+    const statusText = lojaAberta ? "ESTAMOS ABERTO" : "ESTAMOS FECHADOS";
+    
     painelStatus.innerHTML = `
       <div class="painel-secao">
         <h4>Status de Funcionamento</h4>
-        <div class="painel-produto ${lojaAberta ? "" : "indisponivel"}">
+        <div class="painel-produto" style="justify-content: center; gap: 20px; background: rgba(0,0,0,0.3); border-width: 3px;">
           <input type="checkbox" id="check-loja-aberta" ${lojaAberta ? "checked" : ""}>
-          <label for="check-loja-aberta">${lojaAberta ? "Site Aberto para Pedidos" : "Site Fechado para Pedidos"}</label>
+          <label for="check-loja-aberta" class="${statusClass}" style="font-weight: 900; font-size: 1.5em; letter-spacing: 2px; cursor: pointer;">
+            ${statusText}
+          </label>
         </div>
       </div>
     `;
@@ -913,7 +918,7 @@ function criarCardEvento(produto, tipo) {
   return `
     <div class="produto ${produto.selecionado ? "selecionado" : ""} ${bloqueado ? "indisponivel" : ""}">
       <h3>${produto.nome}</h3>
-      <p>${bloqueado ? "Item esgotado no momento" : "Disponível para compor seu cardápio de 100 unidades"}</p>
+      <p>${bloqueado ? "ITEM ESGOTADO" : "Disponível para compor seu cardápio de 100 unidades"}</p>
       <label class="checkbox-salgado">
         <input
           type="checkbox"
@@ -922,7 +927,7 @@ function criarCardEvento(produto, tipo) {
           onchange="toggleSelecaoEvento('${tipo}', '${produto.id}')"
         >
         <span class="checkbox-custom"></span>
-        <span>${bloqueado ? "Indisponível" : "Selecionar este sabor"}</span>
+        <span>${bloqueado ? "ITEM ESGOTADO" : "Selecionar este sabor"}</span>
       </label>
     </div>
   `;
@@ -1018,6 +1023,20 @@ function finalizarEventos() {
   finalizar();
 }
 
+function mostrarNotificacaoSucesso(mensagem) {
+  const toast = document.createElement("div");
+  toast.className = "toast-sucesso";
+  toast.innerHTML = mensagem;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add("mostrar"), 100);
+
+  setTimeout(() => {
+    toast.classList.remove("mostrar");
+    setTimeout(() => toast.remove(), 500);
+  }, 3000);
+}
+
 async function salvarAvailability() {
   const data = {};
 
@@ -1047,7 +1066,7 @@ async function salvarAvailability() {
   if (window.firebaseService) {
     try {
       await window.firebaseService.saveAvailability(data, novaLojaAberta);
-      alert("Disponibilidade dos produtos salva com sucesso!");
+      mostrarNotificacaoSucesso("✅ Alterações salvas com sucesso!");
       return;
     } catch (error) {
       console.error("Erro ao salvar disponibilidade no Firebase:", error);
@@ -1057,7 +1076,7 @@ async function salvarAvailability() {
   }
 
   localStorage.setItem(AVAILABILITY_STORAGE_KEY, JSON.stringify(data));
-  alert("Disponibilidade dos produtos salva localmente com sucesso!");
+  mostrarNotificacaoSucesso("💾 Salvo localmente com sucesso!");
 }
 
 function adminEstaAutenticado() {

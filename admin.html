@@ -13,10 +13,10 @@
     <img class="header-logo" src="logo.png" alt="Logo Casa das Coxinhas">
   </div>
   
-  <div class="horario-funcionamento">
+  <div class="horario-funcionamento" id="header-loja">
     <div class="horario-content">
       <span class="horario-texto">
-        <strong>Estamos Abertos!</strong><br>
+        <strong id="header-loja-status">Estamos Abertos!</strong><br>
         Aberto de Quarta a Domingo, das 18h às 23h
       </span>
     </div>
@@ -70,17 +70,17 @@
         <div id="painel-status-loja"></div>
         
         <div class="painel-secao">
-          <h3>🍴 Cardápio Tradicional</h3>
+          <h3> Cardápio Tradicional</h3>
           <div id="painel-cardapio-regular" class="painel-produtos-page"></div>
         </div>
         
         <div class="painel-secao">
-          <h3>🍴 Cardápio de Eventos - Óleo (R$ 45,00)</h3>
+          <h3> Cardápio de Eventos - Óleo (R$ 45,00)</h3>
           <div id="painel-eventos-oleo" class="painel-produtos-page"></div>
         </div>
 
         <div class="painel-secao">
-          <h3>🔥 Cardápio de Eventos - Forno (R$ 50,00)</h3>
+          <h3> Cardápio de Eventos - Forno (R$ 50,00)</h3>
           <div id="painel-eventos-forno" class="painel-produtos-page"></div>
         </div>
       </div>
@@ -89,6 +89,9 @@
         <button class="btn-salvar" onclick="salvarAvailability()">💾 Salvar Todas as Alterações</button>
         <button class="btn-voltar" onclick="logoutAdmin()">🚪 Sair do Painel</button>
         <button class="btn-voltar" onclick="window.location.href='index.html'">⬅️ Voltar</button>
+        <div style="width: 100%; text-align: center; margin-top: 25px; color: #94a3b8; font-size: 0.9em; border-top: 1px solid #334155; padding-top: 20px;">
+          🛠️ Suporte Técnico: <strong>Lucas (<a href="https://wa.me/5581989849687" target="_blank" style="color: #25d366; text-decoration: none; border-bottom: 1px dashed #25d366;">81 98984-9687</a>)</strong>
+        </div>
       </div>
     </div>
   </div>
