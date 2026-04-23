@@ -445,6 +445,7 @@ function atualizarModoEntrega() {
   const numeroCasaSection = document.getElementById("numero-casa-section");
   const pontoReferenciaSection = document.getElementById("ponto-referencia-section");
   const retiradaInfoSection = document.getElementById("retirada-info");
+  const localizacaoSection = document.getElementById("localizacao-section");
 
   if (modoEntrega === "retirada") {
     bairroSelecionado = "";
@@ -452,6 +453,7 @@ function atualizarModoEntrega() {
     bairroSection.hidden = true;
     numeroCasaSection.hidden = true;
     pontoReferenciaSection.hidden = true;
+    if (localizacaoSection) localizacaoSection.hidden = true;
     retiradaInfoSection.hidden = false;
     
     // Só abre o modal de agendamento se for a página de eventos
@@ -463,6 +465,7 @@ function atualizarModoEntrega() {
     bairroSection.hidden = false;
     numeroCasaSection.hidden = false;
     pontoReferenciaSection.hidden = false;
+    if (localizacaoSection) localizacaoSection.hidden = false;
     retiradaInfoSection.hidden = true;
   }
   render();
