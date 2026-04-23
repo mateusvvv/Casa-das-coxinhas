@@ -41,14 +41,15 @@ module.exports = async (req, res) => {
       criadoEm: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    const domain = process.env.VERCEL_URL || 'casa-das-coxinhas-5f0c5.vercel.app';
+    // Pega o domínio atual da Vercel ou usa o seu oficial
+    const domain = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://casa-das-coxinhas-5f0c5.vercel.app';
 
     const payload = {
       reference_id: pedidoRef.id,
       customer: { name: "Cliente Casa das Coxinhas", email: "cliente@email.com", phone: { country: "55", area: "81", number: "999999999" } },
       items: [{ reference_id: "PEDIDO_DELIVERY", name: "Pedido Casa das Coxinhas", quantity: 1, unit_amount: Math.round(resumo.total * 100) }],
-      notification_urls: [`https://${domain}/api/webhookPagBank`],
-      redirect_url: `https://${domain}/sucesso.html`,
+      notification_urls: [`${domain}/api/webhookPagBank`],
+      redirect_url: `${domain}/sucesso.html`,
       payment_methods: [{ type: cliente.metodo === 'pix_online' ? 'PIX' : 'CREDIT_CARD' }]
     };
 
