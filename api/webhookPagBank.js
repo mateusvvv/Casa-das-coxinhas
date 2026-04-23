@@ -1,18 +1,31 @@
 const admin = require('firebase-admin');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    }),
-  });
-}
-
-const db = admin.firestore();
-
 module.exports = async (req, res) => {
+  try {
+    if (!admin.apps.length) {
+      let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
+      
+      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+        privateKey = privateKey.substring(1, privateKey.length - 1);
+      }
+
+      if (!privateKey.includes('\n') && privateKey.includes('\\n')) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
+      }
+
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: privateKey.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
+  } catch (e) {
+    return res.status(500).send("Erro Firebase Webhook");
+  }
+
+  const db = admin.firestore();
   if (req.method !== 'POST') return res.status(405).send('Método não permitido');
 
   try {

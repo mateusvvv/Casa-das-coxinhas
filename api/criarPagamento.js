@@ -1,21 +1,39 @@
 const admin = require('firebase-admin');
 const axios = require('axios');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    }),
-  });
-}
-
-const db = admin.firestore();
 const PAGBANK_TOKEN = process.env.PAGBANK_TOKEN;
 const PAGBANK_URL = 'https://api.pagseguro.com/checkouts';
 
 module.exports = async (req, res) => {
+  // Inicialização segura do Firebase
+  try {
+    if (!admin.apps.length) {
+      let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
+      
+      // Remove aspas se o usuário colou com elas
+      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+        privateKey = privateKey.substring(1, privateKey.length - 1);
+      }
+
+      // Garante que as quebras de linha sejam interpretadas corretamente
+      if (!privateKey.includes('\n') && privateKey.includes('\\n')) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
+      }
+
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: privateKey.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
+  } catch (e) {
+    return res.status(500).send("Erro na chave do Firebase: " + e.message);
+  }
+
+  const db = admin.firestore();
+
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -41,12 +59,12 @@ module.exports = async (req, res) => {
       criadoEm: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    // Pega o domínio atual da Vercel ou usa o seu oficial
-    const domain = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://casa-das-coxinhas-5f0c5.vercel.app';
+    // Pega o domínio atual da Vercel (garante que use HTTPS)
+    const domain = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL.replace(/^https?:\/\//, '')}` : 'https://casa-das-coxinhas-5f0c5.vercel.app';
 
     const payload = {
       reference_id: pedidoRef.id,
-      customer: { name: "Cliente Casa das Coxinhas", email: "cliente@email.com", phone: { country: "55", area: "81", number: "999999999" } },
+      customer: { name: cliente.nome || "Cliente Casa das Coxinhas", email: "cliente@email.com", phone: { country: "55", area: "81", number: "999999999" } },
       items: [{ reference_id: "PEDIDO_DELIVERY", name: "Pedido Casa das Coxinhas", quantity: 1, unit_amount: Math.round(resumo.total * 100) }],
       notification_urls: [`${domain}/api/webhookPagBank`],
       redirect_url: `${domain}/sucesso.html`,
