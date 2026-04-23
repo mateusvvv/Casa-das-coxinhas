@@ -823,14 +823,16 @@ async function processarPagamentoOnline() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dadosPedido)
     });
-    
-    const result = await response.json();
-    
-    if (result.url) {
+
+    if (response.ok) {
+      const result = await response.json();
       // Redireciona o cliente para a tela de pagamento do PagBank (Pix ou Cartão)
       window.location.href = result.url;
     } else {
-      throw new Error("Link de pagamento não recebido");
+      const errorText = await response.text();
+      console.error("Resposta de erro do servidor:", errorText);
+      alert("Erro do servidor: " + errorText);
+      throw new Error("Erro no servidor");
     }
   } catch (error) {
     console.error("Erro no checkout:", error);
