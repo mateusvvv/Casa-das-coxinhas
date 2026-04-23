@@ -300,6 +300,36 @@ onchange="atualizarFormaPagamento()">
 
 </select>
 </div>
+<div id="parcelas-section" class="bairro-selector" hidden>
+<label for="parcelas-select">Número de Parcelas:</label>
+<select id="parcelas-select" onchange="render()">
+<option value="1">1x (Acréscimo de 6,17%)</option>
+<option value="2">2x (Acréscimo de 9,58%)</option>
+<option value="3">3x (Acréscimo de 12,38%)</option>
+<option value="4">4x (Acréscimo de 15,18%)</option>
+<option value="5">5x (Acréscimo de 17,98%)</option>
+<option value="6">6x (Acréscimo de 20,78%)</option>
+<option value="7">7x (Acréscimo de 23,58%)</option>
+<option value="8">8x (Acréscimo de 26,38%)</option>
+<option value="9">9x (Acréscimo de 29,18%)</option>
+<option value="10">10x (Acréscimo de 31,98%)</option>
+<option value="11">11x (Acréscimo de 34,78%)</option>
+<option value="12">12x (Acréscimo de 37,58%)</option>
+<option value="13">13x (Acréscimo de 40,38%)</option>
+<option value="14">14x (Acréscimo de 43,18%)</option>
+<option value="15">15x (Acréscimo de 45,98%)</option>
+<option value="16">16x (Acréscimo de 48,78%)</option>
+<option value="17">17x (Acréscimo de 51,58%)</option>
+<option value="18">18x (Acréscimo de 54,38%)</option>
+</select>
+</div>
+
+<div id="aviso-cartao" class="aviso-importante" style="margin-bottom: 15px; background: rgba(196, 30, 58, 0.1); border-color: #c41e3a;" hidden>
+<div class="aviso-importante-icone">💳</div>
+<p style="color: #fca5a5;">
+<strong>Aviso:</strong> Parcelamos em até 12x no cartão. O valor total já inclui automaticamente as taxas de juros da operadora para a opção selecionada.
+</p>
+</div>
 
 <div class="bairro-selector">
 <label for="obs-pedido">Observações do Pedido:</label>
@@ -315,6 +345,11 @@ onchange="atualizarFormaPagamento()">
 <div class="resumo-linha">
 <span>Taxa Entrega:</span>
 <span id="taxa">R$ 0,00</span>
+</div>
+
+<div class="resumo-linha" id="taxa-cartao-container" style="display: none;">
+<span>Acréscimo Cartão:</span>
+<span id="taxa-cartao">R$ 0,00</span>
 </div>
 
 <div class="resumo-total">

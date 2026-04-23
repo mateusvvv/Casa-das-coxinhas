@@ -16,6 +16,29 @@ let taxasPorBairro = {
   "Vila da barragem": 15.00,
   "Batinga": 7.00
 };
+const TAXAS_CARTAO_CONFIG = {
+  debito: 0.02, // 2% para débito
+  credito: { 
+    "1": 0.0617,
+    "2": 0.0958,
+    "3": 0.1238,
+    "4": 0.1518,
+    "5": 0.1798,
+    "6": 0.2078,
+    "7": 0.2358,
+    "8": 0.2638,
+    "9": 0.2918,
+    "10": 0.3198,
+    "11": 0.3478,
+    "12": 0.3758,
+    "13": 0.4038,
+    "14": 0.4318,
+    "15": 0.4598,
+    "16": 0.4878,
+    "17": 0.5158,
+    "18": 0.5438
+  }
+};
 let bairroSelecionado = "";
 let localizacaoUsuario = "";
 let modoEntrega = "entrega";
@@ -503,14 +526,26 @@ function confirmarModalRetirada() {
 
 function atualizarFormaPagamento() {
   formaPagamento = document.getElementById("forma-pagamento").value;
+  const parcelasSection = document.getElementById("parcelas-section");
+  const avisoCartao = document.getElementById("aviso-cartao");
+
+  // Esconde parcelas manuais se for pagamento online (o PagBank gerencia isso)
+  if (parcelasSection) parcelasSection.hidden = (formaPagamento !== "credito");
+  
+  const isOnline = formaPagamento === "pix_online" || formaPagamento === "credito_online";
+  if (avisoCartao) avisoCartao.hidden = !(formaPagamento === "credito" || formaPagamento === "debito" || isOnline);
+  
+  render();
   atualizarEstadoFinalizar();
 }
 
 function obterFormaPagamentoTexto() {
   const formasPagamento = {
     pix: "PIX",
+    pix_online: "PIX Online (PagBank)",
     debito: "Cartão de Débito",
     credito: "Cartão de Crédito",
+    credito_online: "Cartão de Crédito Online (PagBank)",
     especie: "Dinheiro em Espécie"
   };
 
@@ -520,11 +555,20 @@ function obterFormaPagamentoTexto() {
 function calcularResumoCarrinho() {
   const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
   const taxa = modoEntrega === "retirada" ? 0 : (bairroSelecionado ? taxasPorBairro[bairroSelecionado] : 0);
+  
+  let taxaCartao = 0;
+  if (formaPagamento === "debito") {
+    taxaCartao = (subtotal + taxa) * TAXAS_CARTAO_CONFIG.debito;
+  } else if (formaPagamento === "credito") {
+    const p = document.getElementById("parcelas-select")?.value || "1";
+    taxaCartao = (subtotal + taxa) * TAXAS_CARTAO_CONFIG.credito[p];
+  }
 
   return {
     subtotal,
     taxa,
-    total: subtotal + taxa,
+    taxaCartao,
+    total: subtotal + taxa + taxaCartao,
     quantidade: carrinho.length
   };
 }
@@ -583,10 +627,18 @@ function render() {
     container.appendChild(div);
   });
 
-  let taxa = modoEntrega === "retirada" ? 0 : (bairroSelecionado ? taxasPorBairro[bairroSelecionado] : 0);
-  let total = subtotal + taxa;
+  const resumoCalculado = calcularResumoCarrinho();
+  let taxa = resumoCalculado.taxa;
+  let taxaCartao = resumoCalculado.taxaCartao;
+  let total = resumoCalculado.total;
+
   document.getElementById("subtotal").innerText = formatarMoeda(subtotal);
   document.getElementById("taxa").innerText = formatarMoeda(taxa);
+  const elTaxaCartao = document.getElementById("taxa-cartao");
+  if (elTaxaCartao) {
+    elTaxaCartao.innerText = formatarMoeda(taxaCartao);
+    elTaxaCartao.parentElement.style.display = taxaCartao > 0 ? "flex" : "none";
+  }
   document.getElementById("total").innerText = formatarMoeda(total);
   resumo.hidden = false;
   atualizarBadgeCarrinho();
@@ -617,6 +669,12 @@ function finalizar() {
     return;
   }
 
+  // Se for pagamento online, redireciona para a lógica do PagBank
+  if (formaPagamento === "pix_online" || formaPagamento === "credito_online") {
+    processarPagamentoOnline();
+    return;
+  }
+
   if (modoEntrega === "entrega" && !bairroSelecionado) {
     alert("Por favor, selecione seu bairro!");
     return;
@@ -636,9 +694,11 @@ function finalizar() {
     return;
   }
 
-  let subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-  let taxa = modoEntrega === "retirada" ? 0 : taxasPorBairro[bairroSelecionado];
-  let total = subtotal + taxa;
+  const resumoCalculado = calcularResumoCarrinho();
+  let subtotal = resumoCalculado.subtotal;
+  let taxa = resumoCalculado.taxa;
+  let taxaCartao = resumoCalculado.taxaCartao;
+  let total = resumoCalculado.total;
 
   let itensAgrupados = {};
   carrinho.forEach((item) => {
@@ -656,6 +716,12 @@ function finalizar() {
   msg += "\n*RESUMO DO PEDIDO:*\n";
   msg += `Subtotal: ${formatarMoeda(subtotal)}\n`;
   msg += `Taxa de Entrega: ${formatarMoeda(taxa)}\n`;
+  if (taxaCartao > 0) {
+    const p = document.getElementById("parcelas-select")?.value || "1";
+    const perc = formaPagamento === "debito" ? "2%" : (TAXAS_CARTAO_CONFIG.credito[p] * 100) + "%";
+    const label = formaPagamento === "credito" ? ` (${p}x)` : "";
+    msg += `Acréscimo Cartão ${perc}${label}: ${formatarMoeda(taxaCartao)}\n`;
+  }
   msg += `*TOTAL: ${formatarMoeda(total)}*\n\n`;
 
   msg += "*FORMA DE PAGAMENTO ESCOLHIDA:*\n";
@@ -725,6 +791,53 @@ function finalizar() {
     }
   }
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));
+}
+
+// Nova função para integração PagBank
+async function processarPagamentoOnline() {
+  const resumo = calcularResumoCarrinho();
+  const btnFinalizar = document.getElementById("btn-finalizar");
+  
+  btnFinalizar.innerText = "⌛ Gerando Pagamento...";
+  btnFinalizar.disabled = true;
+
+  const dadosPedido = {
+    itens: carrinho,
+    resumo: resumo,
+    cliente: {
+      metodo: formaPagamento,
+      entrega: modoEntrega,
+      bairro: bairroSelecionado,
+      numero: document.getElementById("numero-casa")?.value,
+      referencia: document.getElementById("ponto-referencia")?.value,
+      obs: document.getElementById("obs-pedido")?.value
+    }
+  };
+
+  try {
+    // URL da API na Vercel
+    const urlFunction = `/api/criarPagamento`;
+
+    const response = await fetch(urlFunction, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dadosPedido)
+    });
+    
+    const result = await response.json();
+    
+    if (result.url) {
+      // Redireciona o cliente para a tela de pagamento do PagBank (Pix ou Cartão)
+      window.location.href = result.url;
+    } else {
+      throw new Error("Link de pagamento não recebido");
+    }
+  } catch (error) {
+    console.error("Erro no checkout:", error);
+    alert("Erro ao gerar pagamento online. Tente novamente ou escolha pagar na entrega.");
+    btnFinalizar.disabled = false;
+    btnFinalizar.innerText = "Finalizar Pedido";
+  }
 }
 
 // ========== NOVOS SISTEMAS ==========
