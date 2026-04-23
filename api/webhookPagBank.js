@@ -3,6 +3,10 @@ const admin = require('firebase-admin');
 module.exports = async (req, res) => {
   try {
     if (!admin.apps.length) {
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+      if (!projectId || !clientEmail) throw new Error("Variáveis ausentes.");
+
       let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
       
       if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
@@ -15,9 +19,12 @@ module.exports = async (req, res) => {
 
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          projectId: projectId,
+          project_id: projectId,
+          clientEmail: clientEmail,
+          client_email: clientEmail,
           privateKey: privateKey.replace(/\\n/g, '\n'),
+          private_key: privateKey.replace(/\\n/g, '\n'),
         }),
       });
     }

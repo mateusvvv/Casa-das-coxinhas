@@ -8,6 +8,10 @@ module.exports = async (req, res) => {
   // Inicialização segura do Firebase
   try {
     if (!admin.apps.length) {
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+      if (!projectId || !clientEmail) throw new Error("Variáveis de ambiente do Firebase ausentes no servidor.");
+
       let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
       
       // Remove aspas se o usuário colou com elas
@@ -22,9 +26,12 @@ module.exports = async (req, res) => {
 
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          projectId: projectId,
+          project_id: projectId, // Fallback para snake_case
+          clientEmail: clientEmail,
+          client_email: clientEmail, // Fallback para snake_case
           privateKey: privateKey.replace(/\\n/g, '\n'),
+          private_key: privateKey.replace(/\\n/g, '\n'), // Fallback para snake_case
         }),
       });
     }
