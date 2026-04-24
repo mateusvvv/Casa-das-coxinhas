@@ -40,7 +40,29 @@ module.exports = async (req, res) => {
       if (status === 'PAID' || status === 'COMPLETED') statusTraduzido = 'Pago';
       else if (status === 'DECLINED' || status === 'CANCELED' || status === 'EXPIRED') statusTraduzido = 'Cancelado';
 
-      await db.collection('pedidos').doc(reference_id).update({
+      const pedidoRef = db.collection('pedidos').doc(reference_id);
+      const pedidoDoc = await pedidoRef.get();
+
+      if (pedidoDoc.exists && statusTraduzido === 'Pago' && pedidoDoc.data().status !== 'Pago') {
+        const itensPedido = pedidoDoc.data().itens || [];
+        const disponibilidadeRef = db.collection('configuracoes').doc('disponibilidade');
+        
+        await db.runTransaction(async (transaction) => {
+          const dispDoc = await transaction.get(disponibilidadeRef);
+          if (!dispDoc.exists) return;
+
+          const dispData = dispDoc.data();
+          itensPedido.forEach(item => {
+            if (item.id && dispData.itens && dispData.itens[item.id]) {
+              const estoqueAtual = dispData.itens[item.id].estoque || 0;
+              dispData.itens[item.id].estoque = Math.max(0, estoqueAtual - 1);
+            }
+          });
+          transaction.update(disponibilidadeRef, dispData);
+        });
+      }
+
+      await pedidoRef.update({
         status: statusTraduzido,
         pagbank_status: status,
         atualizadoEm: admin.firestore.FieldValue.serverTimestamp()

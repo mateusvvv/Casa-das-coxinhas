@@ -1643,6 +1643,19 @@ button.adicionar{
   }
 }
 
+/* ESTILO PARA INPUT DE ESTOQUE NO ADMIN */
+.admin-stock-input {
+  width: 60px !important;
+  padding: 5px !important;
+  margin-left: 10px;
+  border: 1px solid #334155 !important;
+  background: #1e293b !important;
+  color: #FFA500 !important;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
+
 /* ESTILIZAÇÃO DO MODAL DO DESENVOLVEDOR */
 .modal-developer {
   text-align: center !important;
@@ -1757,6 +1770,19 @@ button.adicionar{
 @keyframes glowVermelho {
   from { text-shadow: 0 0 5px #ef4444, 0 0 10px #ef4444; }
   to { text-shadow: 0 0 15px #ef4444, 0 0 25px #ef4444; }
+}
+
+/* AVISO DE ESTOQUE BAIXO NO CARDÁPIO */
+.aviso-estoque {
+  background: rgba(255, 165, 0, 0.2);
+  color: #FFA500;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  border: 1px dashed #FFA500;
 }
 
 /* TOAST NOTIFICAÇÃO */

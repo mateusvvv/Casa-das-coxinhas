@@ -47,8 +47,8 @@ module.exports = async (req, res) => {
 
   const { itens, resumo, cliente } = req.body;
 
-  if (!PAGBANK_TOKEN) {
-    return res.status(500).json({ error: 'Configuração do PagBank ausente (PAGBANK_TOKEN)' });
+  if (!PAGBANK_TOKEN || PAGBANK_TOKEN === "") {
+    return res.status(500).json({ error: 'Configuração do PagBank ausente (Variável PAGBANK_TOKEN)' });
   }
 
   try {
@@ -81,7 +81,7 @@ module.exports = async (req, res) => {
       }
     });
 
-    const payLink = response.data.links.find(l => l.rel === 'PAY');
+    const payLink = response.data.links ? response.data.links.find(l => l.rel === 'PAY') : null;
     
     if (!payLink) {
       throw new Error("Link de pagamento não retornado pelo PagBank.");

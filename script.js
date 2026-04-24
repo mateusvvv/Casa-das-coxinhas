@@ -52,24 +52,24 @@ const ADMIN_EMAIL = "edmilsonjosedasilva14@gmail.com";
 const AVAILABILITY_STORAGE_KEY = "produtosAvailability";
 
 const produtosRegulares = [
-  { id: "coxinha-frango", nome: "Coxinha Frango", disponivel: true },
-  { id: "coxinha-catupiry", nome: "Coxinha c/ Catupiry", disponivel: true },
-  { id: "coxinha-cheddar", nome: "Coxinha c/ Cheddar", disponivel: true },
-  { id: "coxinha-calabresa", nome: "Coxinha Frango c/ Calabresa", disponivel: true },
-  { id: "coxinha-charque-catupiry", nome: "Coxinha Charque c/ Catupiry", disponivel: true },
-  { id: "coxinha-charque", nome: "Coxinha de Charque", disponivel: true },
-  { id: "coxinha-charque-queijo", nome: "Coxinha Charque c/ Queijo", disponivel: true },
-  { id: "coxinha-frango-queijo", nome: "Coxinha Frango c/ Queijo", disponivel: true },
-  { id: "bolinho-carne", nome: "Bolinho de Carne", disponivel: true },
-  { id: "bolinho-pizza", nome: "Bolinho de Pizza", disponivel: true },
-  { id: "enroladinho", nome: "Enroladinho", disponivel: true },
-  { id: "pastel", nome: "Pastel c/ Dois Sabores", disponivel: true },
-  { id: "x-burguer", nome: "X-Burguer", disponivel: true },
-  { id: "hamburguer", nome: "Hamburguer", disponivel: true },
-  { id: "x-tudo", nome: "X-Tudo", disponivel: true },
-  { id: "cachorro-quente", nome: "Cachorro Quente", disponivel: true },
-  { id: "refri-1l", nome: "Refrigerante 1L", disponivel: true },
-  { id: "refri-lata", nome: "Refrigerante Lata", disponivel: true }
+  { id: "coxinha-frango", nome: "Coxinha Frango", disponivel: true, estoque: 99 },
+  { id: "coxinha-catupiry", nome: "Coxinha c/ Catupiry", disponivel: true, estoque: 99 },
+  { id: "coxinha-cheddar", nome: "Coxinha c/ Cheddar", disponivel: true, estoque: 99 },
+  { id: "coxinha-calabresa", nome: "Coxinha Frango c/ Calabresa", disponivel: true, estoque: 99 },
+  { id: "coxinha-charque-catupiry", nome: "Coxinha Charque c/ Catupiry", disponivel: true, estoque: 99 },
+  { id: "coxinha-charque", nome: "Coxinha de Charque", disponivel: true, estoque: 99 },
+  { id: "coxinha-charque-queijo", nome: "Coxinha Charque c/ Queijo", disponivel: true, estoque: 99 },
+  { id: "coxinha-frango-queijo", nome: "Coxinha Frango c/ Queijo", disponivel: true, estoque: 99 },
+  { id: "bolinho-carne", nome: "Bolinho de Carne", disponivel: true, estoque: 99 },
+  { id: "bolinho-pizza", nome: "Bolinho de Pizza", disponivel: true, estoque: 99 },
+  { id: "enroladinho", nome: "Enroladinho", disponivel: true, estoque: 99 },
+  { id: "pastel", nome: "Pastel c/ Dois Sabores", disponivel: true, estoque: 99 },
+  { id: "x-burguer", nome: "X-Burguer", disponivel: true, estoque: 99 },
+  { id: "hamburguer", nome: "Hamburguer", disponivel: true, estoque: 99 },
+  { id: "x-tudo", nome: "X-Tudo", disponivel: true, estoque: 99 },
+  { id: "cachorro-quente", nome: "Cachorro Quente", disponivel: true, estoque: 99 },
+  { id: "refri-1l", nome: "Refrigerante 1L", disponivel: true, estoque: 99 },
+  { id: "refri-lata", nome: "Refrigerante Lata", disponivel: true, estoque: 99 }
 ];
 
 function formatarMoeda(valor) {
@@ -100,7 +100,10 @@ function coletarAvailabilityData() {
   const data = {};
 
   obterTodosProdutos().forEach((produto) => {
-    data[produto.id] = !!produto.disponivel;
+    data[produto.id] = {
+      disponivel: !!produto.disponivel,
+      estoque: parseInt(produto.estoque) || 0
+    };
   });
 
   return data;
@@ -118,14 +121,19 @@ function aplicarAvailabilityData(data) {
   }
 
   produtosRegulares.forEach((produto) => {
-    if (itens[produto.id] !== undefined) {
-      produto.disponivel = !!itens[produto.id];
+    const itemRemoto = itens[produto.id];
+    if (itemRemoto !== undefined) {
+      // Suporta tanto o formato antigo (boolean) quanto o novo (objeto)
+      produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
+      produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
     }
   });
 
   produtosEventos.oleo.forEach((produto) => {
-    if (itens[produto.id] !== undefined) {
-      produto.disponivel = !!itens[produto.id];
+    const itemRemoto = itens[produto.id];
+    if (itemRemoto !== undefined) {
+      produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
+      produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -133,8 +141,10 @@ function aplicarAvailabilityData(data) {
   });
 
   produtosEventos.forno.forEach((produto) => {
-    if (itens[produto.id] !== undefined) {
-      produto.disponivel = !!itens[produto.id];
+    const itemRemoto = itens[produto.id];
+    if (itemRemoto !== undefined) {
+      produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
+      produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -395,9 +405,14 @@ function alterarQtd(id, valor) {
   if (!produtoEstaDisponivel(id)) {
     return;
   }
+  
+  const produto = encontrarProdutoPorId(id);
+  const maxEstoque = (produto && produto.estoque !== undefined) ? produto.estoque : 99;
 
   quantidades[id] = (quantidades[id] || 1) + valor;
-  if (quantidades[id] < 1) {
+  if (quantidades[id] > maxEstoque) {
+    quantidades[id] = maxEstoque;
+  } else if (quantidades[id] < 1) {
     quantidades[id] = 1;
   }
   const contador = document.getElementById(`qtd-${id}`);
@@ -428,10 +443,19 @@ function add(nome, preco, id) {
     alert("Este item está esgotado no momento.");
     return;
   }
+  
+  const produto = encontrarProdutoPorId(id);
+  const qtdNoCarrinho = carrinho.filter(i => i.id === id).length;
+  const qtdDesejada = quantidades[id] || 1;
+
+  if (produto && (qtdNoCarrinho + qtdDesejada) > produto.estoque) {
+    alert(`Ops! Temos apenas ${produto.estoque} unidades de "${nome}" em estoque.`);
+    return;
+  }
 
   const qtd = quantidades[id] || 1;
   for (let i = 0; i < qtd; i++) {
-    carrinho.push({ nome, preco });
+    carrinho.push({ nome, preco, id }); // Adicionado ID para controle de estoque
   }
   quantidades[id] = 1;
   const contador = document.getElementById(`qtd-${id}`);
@@ -529,11 +553,9 @@ function atualizarFormaPagamento() {
   const parcelasSection = document.getElementById("parcelas-section");
   const avisoCartao = document.getElementById("aviso-cartao");
 
-  // Esconde parcelas manuais se for pagamento online (o PagBank gerencia isso)
   if (parcelasSection) parcelasSection.hidden = (formaPagamento !== "credito");
   
-  const isOnline = formaPagamento === "pix_online" || formaPagamento === "credito_online";
-  if (avisoCartao) avisoCartao.hidden = !(formaPagamento === "credito" || formaPagamento === "debito" || isOnline);
+  if (avisoCartao) avisoCartao.hidden = !(formaPagamento === "credito" || formaPagamento === "debito");
   
   render();
   atualizarEstadoFinalizar();
@@ -541,12 +563,10 @@ function atualizarFormaPagamento() {
 
 function obterFormaPagamentoTexto() {
   const formasPagamento = {
-    pix: "PIX",
-    pix_online: "PIX Online (PagBank)",
+    pix: "Pix",
     debito: "Cartão de Débito",
     credito: "Cartão de Crédito",
-    credito_online: "Cartão de Crédito Online (PagBank)",
-    especie: "Dinheiro em Espécie"
+    especie: "Em Espécie"
   };
 
   return formasPagamento[formaPagamento] || "";
@@ -669,12 +689,6 @@ function finalizar() {
     return;
   }
 
-  // Se for pagamento online, redireciona para a lógica do PagBank
-  if (formaPagamento === "pix_online" || formaPagamento === "credito_online") {
-    processarPagamentoOnline();
-    return;
-  }
-
   if (modoEntrega === "entrega" && !bairroSelecionado) {
     alert("Por favor, selecione seu bairro!");
     return;
@@ -769,17 +783,16 @@ function finalizar() {
   }
 
   const temEvento = carrinho.some(item => item.nome.includes("Cardápio de Eventos"));
-  const isAgendamento = modoEntrega === "retirada" || temEvento;
 
-  if (formaPagamento !== "especie" || isAgendamento) {
+  if (formaPagamento !== "especie" || temEvento) {
     msg += "══════════════\n";
     msg += "*AVISO IMPORTANTE*\n";
     msg += "══════════════\n\n";
 
     if (formaPagamento === "pix") {
       msg += "*O pedido será confirmado após o pagamento e ENVIO DO COMPROVANTE ou confirmação da equipe*.\n\n";
-    } else if (isAgendamento) {
-      msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *RETIRADA* ou *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
+    } else if (temEvento) {
+      msg += "*NÃO PAGUE AGORA:* Se o seu pedido for para *EVENTO*, por favor, aguarde o nosso 'OK' aqui no WhatsApp primeiro. Precisamos validar se temos vaga disponível para a data e horário que você escolheu.\n\n";
     }
 
     if (formaPagamento === "credito" || formaPagamento === "debito") {
@@ -793,54 +806,7 @@ function finalizar() {
   window.open("https://wa.me/5581982116454?text=" + encodeURIComponent(msg));
 }
 
-// Nova função para integração PagBank
-async function processarPagamentoOnline() {
-  const resumo = calcularResumoCarrinho();
-  const btnFinalizar = document.getElementById("btn-finalizar");
-  
-  btnFinalizar.innerText = "⌛ Gerando Pagamento...";
-  btnFinalizar.disabled = true;
-
-  const dadosPedido = {
-    itens: carrinho,
-    resumo: resumo,
-    cliente: {
-      metodo: formaPagamento,
-      entrega: modoEntrega,
-      bairro: bairroSelecionado,
-      numero: document.getElementById("numero-casa")?.value,
-      referencia: document.getElementById("ponto-referencia")?.value,
-      obs: document.getElementById("obs-pedido")?.value
-    }
-  };
-
-  try {
-    // URL da API na Vercel
-    const urlFunction = `/api/criarPagamento`;
-
-    const response = await fetch(urlFunction, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dadosPedido)
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      // Redireciona o cliente para a tela de pagamento do PagBank (Pix ou Cartão)
-      window.location.href = result.url;
-    } else {
-      const errorText = await response.text();
-      console.error("Resposta de erro do servidor:", errorText);
-      alert("Erro do servidor: " + errorText);
-      throw new Error("Erro no servidor");
-    }
-  } catch (error) {
-    console.error("Erro no checkout:", error);
-    alert("Erro ao gerar pagamento online. Tente novamente ou escolha pagar na entrega.");
-    btnFinalizar.disabled = false;
-    btnFinalizar.innerText = "Finalizar Pedido";
-  }
-}
+// Removida a função processarPagamentoOnline() pois a integração foi desativada.
 
 // ========== NOVOS SISTEMAS ==========
 
@@ -875,8 +841,14 @@ function aplicarDisponibilidadeCardapioRegular() {
   cards.forEach((card) => {
     const id = card.dataset.productId;
     const disponivel = produtoEstaDisponivel(id);
+    const produto = encontrarProdutoPorId(id);
+    const estoque = produto ? produto.estoque : 0;
 
     card.classList.toggle("indisponivel", !disponivel);
+
+    // Remover avisos de estoque antigos se existirem
+    const avisoAntigo = card.querySelector(".aviso-estoque");
+    if (avisoAntigo) avisoAntigo.remove();
 
     const botoesQuantidade = card.querySelectorAll(".quantidade-selector button");
     botoesQuantidade.forEach((botao) => {
@@ -887,6 +859,14 @@ function aplicarDisponibilidadeCardapioRegular() {
     if (botaoAdicionar) {
       botaoAdicionar.disabled = !disponivel;
       botaoAdicionar.textContent = disponivel ? "Adicionar ao Carrinho" : "ITEM ESGOTADO";
+
+      // Adicionar aviso de "Últimas unidades" se o estoque for baixo
+      if (disponivel && estoque > 0 && estoque <= 5) {
+        const aviso = document.createElement("div");
+        aviso.className = "aviso-estoque";
+        aviso.innerHTML = `⚠️ Últimas ${estoque} unidades!`;
+        card.insertBefore(aviso, botaoAdicionar);
+      }
     }
   });
 }
@@ -922,6 +902,7 @@ function atualizarPainelAdminPage() {
     <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
       <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
       <label for="check-${produto.id}">${produto.nome}</label>
+      <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0" title="Quantidade em estoque">
     </div>
   `).join("");
 
@@ -929,6 +910,7 @@ function atualizarPainelAdminPage() {
     <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
       <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
       <label for="check-${produto.id}">${produto.nome}</label>
+      <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0">
     </div>
   `).join("");
 
@@ -936,6 +918,7 @@ function atualizarPainelAdminPage() {
     <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
       <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
       <label for="check-${produto.id}">${produto.nome}</label>
+      <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0">
     </div>
   `).join("");
 }
@@ -1163,20 +1146,31 @@ async function salvarAvailability() {
 
   produtosRegulares.forEach((produto) => {
     const checkbox = document.getElementById(`check-${produto.id}`);
-    data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
-    produto.disponivel = data[produto.id];
+    const stockInput = document.getElementById(`stock-${produto.id}`);
+    const isAvailable = checkbox ? checkbox.checked : produto.disponivel;
+    const stockQty = stockInput ? parseInt(stockInput.value) : (produto.estoque || 0);
+    
+    data[produto.id] = { disponivel: isAvailable, estoque: stockQty };
+    produto.disponivel = isAvailable;
+    produto.estoque = stockQty;
   });
 
   produtosEventos.oleo.forEach((produto) => {
     const checkbox = document.getElementById(`check-${produto.id}`);
-    data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
-    produto.disponivel = data[produto.id];
+    const stockInput = document.getElementById(`stock-${produto.id}`);
+    data[produto.id] = { 
+      disponivel: checkbox ? checkbox.checked : produto.disponivel,
+      estoque: stockInput ? parseInt(stockInput.value) : (produto.estoque || 0)
+    };
   });
 
   produtosEventos.forno.forEach((produto) => {
     const checkbox = document.getElementById(`check-${produto.id}`);
-    data[produto.id] = checkbox ? checkbox.checked : produto.disponivel;
-    produto.disponivel = data[produto.id];
+    const stockInput = document.getElementById(`stock-${produto.id}`);
+    data[produto.id] = { 
+      disponivel: checkbox ? checkbox.checked : produto.disponivel,
+      estoque: stockInput ? parseInt(stockInput.value) : (produto.estoque || 0)
+    };
   });
 
   aplicarAvailabilityData(data);
