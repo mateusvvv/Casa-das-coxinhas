@@ -216,7 +216,7 @@ function confirmarRefrigerante() {
   const qtd = refriTemp.tamanho === "1L" ? (quantidades["refri-1l"] || 1) : (quantidades["refri-lata"] || 1);
 
   for (let i = 0; i < qtd; i++) {
-    carrinho.push({ nome: descricao, preco: refriTemp.preco });
+    carrinho.push({ nome: descricao, preco: refriTemp.preco, id: refriTemp.id });
   }
 
   if (refriTemp.tamanho === "1L") {
@@ -228,6 +228,7 @@ function confirmarRefrigerante() {
   }
 
   fecharModalRefrigerante();
+  atualizarAvisoEstoque(refriTemp.id);
   render();
 }
 
@@ -272,12 +273,13 @@ function confirmarPastel() {
   const qtd = quantidades.pastel || 1;
 
   for (let i = 0; i < qtd; i++) {
-    carrinho.push({ nome: descricao, preco: 9.00 });
+    carrinho.push({ nome: descricao, preco: 9.00, id: "pastel" });
   }
 
   quantidades.pastel = 1;
   document.getElementById("qtd-pastel").innerText = 1;
   fecharModalPastel();
+  atualizarAvisoEstoque("pastel");
   render();
 }
 
@@ -310,12 +312,13 @@ function confirmarCachorro() {
 
   const qtd = quantidades["cachorro-quente"] || 1;
   for (let i = 0; i < qtd; i++) {
-    carrinho.push({ nome: descricao, preco: 5.00 });
+    carrinho.push({ nome: descricao, preco: 5.00, id: "cachorro-quente" });
   }
 
   quantidades["cachorro-quente"] = 1;
   document.getElementById("qtd-cachorro-quente").innerText = 1;
   fecharModalCachorro();
+  atualizarAvisoEstoque("cachorro-quente");
   render();
 }
 
@@ -407,11 +410,12 @@ function alterarQtd(id, valor) {
   }
   
   const produto = encontrarProdutoPorId(id);
-  const maxEstoque = (produto && produto.estoque !== undefined) ? produto.estoque : 99;
+  const qtdNoCarrinho = carrinho.filter(i => i.id === id).length;
+  const maxDisponivel = (produto && produto.estoque !== undefined) ? (produto.estoque - qtdNoCarrinho) : 99;
 
   quantidades[id] = (quantidades[id] || 1) + valor;
-  if (quantidades[id] > maxEstoque) {
-    quantidades[id] = maxEstoque;
+  if (quantidades[id] > maxDisponivel) {
+    quantidades[id] = Math.max(1, maxDisponivel);
   } else if (quantidades[id] < 1) {
     quantidades[id] = 1;
   }
@@ -419,6 +423,7 @@ function alterarQtd(id, valor) {
   if (contador) {
     contador.innerText = quantidades[id];
   }
+  atualizarAvisoEstoque(id);
 }
 
 function toggleCarrinho(abrir) {
@@ -462,6 +467,7 @@ function add(nome, preco, id) {
   if (contador) {
     contador.innerText = 1;
   }
+  atualizarAvisoEstoque(id);
   render();
 }
 
@@ -666,8 +672,14 @@ function render() {
 }
 
 function removerItem(nome) {
+  const item = carrinho.find(i => i.nome === nome);
+  const id = item ? item.id : null;
+
   carrinho = carrinho.filter((item) => item.nome !== nome);
   render();
+  if (id) {
+    atualizarAvisoEstoque(id);
+  }
 }
 
 function atualizarTaxa() {
@@ -835,20 +847,42 @@ const produtosEventos = {
   salgadosSelecionadosForno: 0
 };
 
+function atualizarAvisoEstoque(id) {
+  const card = document.querySelector(`[data-product-id="${id}"]`);
+  if (!card) return;
+
+  const produto = encontrarProdutoPorId(id);
+  if (!produto) return;
+
+  const qtdNoCarrinho = carrinho.filter(i => i.id === id).length;
+  const estoqueDisponivelReal = produto.estoque - qtdNoCarrinho;
+  const qtdDesejada = quantidades[id] || 1;
+
+  let aviso = card.querySelector(".aviso-estoque");
+  const botaoAdicionar = card.querySelector("button.adicionar");
+
+  if (produto.disponivel && estoqueDisponivelReal > 0 && estoqueDisponivelReal <= 5) {
+    if (!aviso) {
+      aviso = document.createElement("div");
+      aviso.className = "aviso-estoque";
+      card.insertBefore(aviso, botaoAdicionar);
+    }
+    // Se o cliente selecionar mais no contador, mostramos o que sobraria
+    const restantes = Math.max(0, estoqueDisponivelReal - (qtdDesejada - 1));
+    aviso.innerHTML = `⚠️ Últimas ${restantes} unidades!`;
+  } else if (aviso) {
+    aviso.remove();
+  }
+}
+
 function aplicarDisponibilidadeCardapioRegular() {
   const cards = document.querySelectorAll("[data-product-id]");
 
   cards.forEach((card) => {
     const id = card.dataset.productId;
     const disponivel = produtoEstaDisponivel(id);
-    const produto = encontrarProdutoPorId(id);
-    const estoque = produto ? produto.estoque : 0;
 
     card.classList.toggle("indisponivel", !disponivel);
-
-    // Remover avisos de estoque antigos se existirem
-    const avisoAntigo = card.querySelector(".aviso-estoque");
-    if (avisoAntigo) avisoAntigo.remove();
 
     const botoesQuantidade = card.querySelectorAll(".quantidade-selector button");
     botoesQuantidade.forEach((botao) => {
@@ -859,15 +893,8 @@ function aplicarDisponibilidadeCardapioRegular() {
     if (botaoAdicionar) {
       botaoAdicionar.disabled = !disponivel;
       botaoAdicionar.textContent = disponivel ? "Adicionar ao Carrinho" : "ITEM ESGOTADO";
-
-      // Adicionar aviso de "Últimas unidades" se o estoque for baixo
-      if (disponivel && estoque > 0 && estoque <= 5) {
-        const aviso = document.createElement("div");
-        aviso.className = "aviso-estoque";
-        aviso.innerHTML = `⚠️ Últimas ${estoque} unidades!`;
-        card.insertBefore(aviso, botaoAdicionar);
-      }
     }
+    atualizarAvisoEstoque(id);
   });
 }
 
