@@ -869,7 +869,16 @@ function atualizarAvisoEstoque(id) {
     }
     // Se o cliente selecionar mais no contador, mostramos o que sobraria
     const restantes = Math.max(0, estoqueDisponivelReal - (qtdDesejada - 1));
-    aviso.innerHTML = `⚠️ Últimas ${restantes} unidades!`;
+    
+    // Personalização da mensagem para refrigerantes
+    let textoAviso = `⚠️ Últimas ${restantes} unidades!`;
+    if (id === "refri-1l") {
+      textoAviso = `⚠️ Últimas ${restantes} unidades de Coca ou Guaraná!`;
+    } else if (id === "refri-lata") {
+      textoAviso = `⚠️ Últimas ${restantes} unidades de Coca, Fanta ou Guaraná!`;
+    }
+
+    aviso.innerHTML = textoAviso;
   } else if (aviso) {
     aviso.remove();
   }
