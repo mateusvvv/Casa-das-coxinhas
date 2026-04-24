@@ -410,6 +410,7 @@ function atualizarEstadoFinalizar() {
     return;
   }
   const numeroPreenchido = numeroCasa ? numeroCasa.value.trim() !== "" : false;
+  const nomePreenchido = document.getElementById("nome-cliente")?.value.trim() !== "";
   
   const diaRetirada = document.getElementById("retirada-dia")?.value;
   const horaRetirada = document.getElementById("retirada-horario")?.value;
@@ -421,7 +422,7 @@ function atualizarEstadoFinalizar() {
   const retiradaValida = modoEntrega === "retirada" && agendamentoOK;
   const entregaValida = modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido;
 
-  botaoFinalizar.disabled = !lojaAberta || carrinho.length === 0 || !(retiradaValida || entregaValida) || !formaPagamento;
+  botaoFinalizar.disabled = !lojaAberta || carrinho.length === 0 || !nomePreenchido || !(retiradaValida || entregaValida) || !formaPagamento;
 }
 
 function atualizarModoEntrega() {
@@ -643,6 +644,12 @@ function finalizar() {
     return;
   }
 
+  const nomeCliente = document.getElementById("nome-cliente")?.value.trim();
+  if (!nomeCliente) {
+    alert("Por favor, informe seu nome!");
+    return;
+  }
+
   const numeroCasa = document.getElementById("numero-casa").value.trim();
   const pontoReferencia = document.getElementById("ponto-referencia").value.trim();
   const obsPedido = document.getElementById("obs-pedido")?.value.trim();
@@ -668,6 +675,7 @@ function finalizar() {
 
   let msg = "*PEDIDO - CASA DAS COXINHAS*\n\n";
 
+  msg += `*CLIENTE:* ${nomeCliente}\n\n`;
   msg += "*ITENS DO PEDIDO:*\n";
   msg += formatarItensParaWhatsApp(itensAgrupados);
 

@@ -314,6 +314,10 @@
     <div id="carrinho-itens" class="carrinho-vazio">Nenhum item adicionado</div>
     <div id="carrinho-resumo" class="carrinho-resumo" hidden>
       <div class="bairro-selector">
+        <label for="nome-cliente">Seu Nome:</label>
+        <input type="text" id="nome-cliente" placeholder="Digite seu nome" oninput="atualizarEstadoFinalizar()" />
+      </div>
+      <div class="bairro-selector">
         <label for="modo-entrega">Modo de Retirada / Entrega:</label>
         <select id="modo-entrega" onchange="atualizarModoEntrega()">
           <option value="entrega">Entrega</option>
@@ -399,7 +403,7 @@
       <div id="aviso-cartao" class="aviso-importante" style="margin-bottom: 15px; background: rgba(196, 30, 58, 0.1); border-color: #c41e3a;" hidden>
         <div class="aviso-importante-icone">💳</div>
         <p style="color: #fca5a5;">
-          <strong>Aviso:</strong> Parcelamos em até 12x no cartão. O valor total abaixo já inclui automaticamente as taxas de juros da operadora para a opção selecionada.
+          <strong>Aviso:</strong> Parcelamos em até 18x no cartão. O valor total abaixo já inclui automaticamente as taxas de juros da operadora para a opção selecionada.
         </p>
       </div>
       <div class="bairro-selector">

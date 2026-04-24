@@ -1360,7 +1360,7 @@ button.finalizar:disabled {
 
 .painel-produtos-page {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
 }
 
@@ -1428,7 +1428,7 @@ button.finalizar:disabled {
   }
   
   .painel-produtos-page {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
