@@ -5,38 +5,34 @@ module.exports = async (req, res) => {
     if (!admin.apps.length) {
       const projectId = process.env.FIREBASE_PROJECT_ID;
       const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-      if (!projectId || !clientEmail) throw new Error("Variáveis ausentes.");
+      const privateKey = process.env.FIREBASE_PRIVATE_KEY
+        ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/"/g, '')
+        : undefined;
 
-      let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
-      
-      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-        privateKey = privateKey.substring(1, privateKey.length - 1);
-      }
-
-      if (!privateKey.includes('\n') && privateKey.includes('\\n')) {
-        privateKey = privateKey.replace(/\\n/g, '\n');
-      }
+      if (!projectId || !clientEmail || !privateKey) throw new Error("Variáveis de ambiente incompletas.");
 
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: projectId,
-          project_id: projectId,
-          clientEmail: clientEmail,
-          client_email: clientEmail,
-          privateKey: privateKey.replace(/\\n/g, '\n'),
-          private_key: privateKey.replace(/\\n/g, '\n'),
+          projectId,
+          clientEmail,
+          privateKey,
         }),
       });
     }
   } catch (e) {
-    return res.status(500).send("Erro Firebase Webhook");
+    return res.status(500).send("Erro Firebase Webhook: " + e.message);
   }
 
   const db = admin.firestore();
   if (req.method !== 'POST') return res.status(405).send('Método não permitido');
 
   try {
-    const { reference_id, status } = req.body;
+    // O PagBank pode enviar o ID de referência ou o ID da transação
+    const { reference_id, status, id: transacao_id } = req.body;
+
+    if (!reference_id) {
+      return res.status(200).send('Ignorado: Sem reference_id');
+    }
 
     if (reference_id) {
       let statusTraduzido = 'Aguardando Pagamento';

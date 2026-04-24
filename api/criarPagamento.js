@@ -2,7 +2,9 @@ const admin = require('firebase-admin');
 const axios = require('axios');
 
 const PAGBANK_TOKEN = process.env.PAGBANK_TOKEN;
-const PAGBANK_URL = 'https://api.pagseguro.com/checkouts';
+const PAGBANK_URL = process.env.PAGBANK_TOKEN?.startsWith('test_') 
+  ? 'https://sandbox.api.pagseguro.com/checkouts' 
+  : 'https://api.pagseguro.com/checkouts';
 
 module.exports = async (req, res) => {
   // Inicialização segura do Firebase
@@ -10,28 +12,18 @@ module.exports = async (req, res) => {
     if (!admin.apps.length) {
       const projectId = process.env.FIREBASE_PROJECT_ID;
       const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-      if (!projectId || !clientEmail) throw new Error("Variáveis de ambiente do Firebase ausentes no servidor.");
+      if (!projectId || !clientEmail || !process.env.FIREBASE_PRIVATE_KEY) throw new Error("Variáveis de ambiente do Firebase ausentes.");
 
-      let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
-      
-      // Remove aspas se o usuário colou com elas
-      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-        privateKey = privateKey.substring(1, privateKey.length - 1);
-      }
-
-      // Garante que as quebras de linha sejam interpretadas corretamente
-      if (!privateKey.includes('\n') && privateKey.includes('\\n')) {
-        privateKey = privateKey.replace(/\\n/g, '\n');
-      }
+      // Tratamento robusto da Private Key
+      const privateKey = process.env.FIREBASE_PRIVATE_KEY
+        ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/"/g, '')
+        : undefined;
 
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: projectId,
-          project_id: projectId, // Fallback para snake_case
-          clientEmail: clientEmail,
-          client_email: clientEmail, // Fallback para snake_case
-          privateKey: privateKey.replace(/\\n/g, '\n'),
-          private_key: privateKey.replace(/\\n/g, '\n'), // Fallback para snake_case
+          projectId,
+          clientEmail,
+          privateKey,
         }),
       });
     }
@@ -55,25 +47,29 @@ module.exports = async (req, res) => {
 
   const { itens, resumo, cliente } = req.body;
 
+  if (!PAGBANK_TOKEN) {
+    return res.status(500).json({ error: 'Configuração do PagBank ausente (PAGBANK_TOKEN)' });
+  }
+
   try {
     const pedidoRef = db.collection('pedidos').doc();
     await pedidoRef.set({
       id: pedidoRef.id,
       itens,
-      total: resumo.total,
+      total: resumo.total || 0,
       cliente,
       status: 'Aguardando Pagamento',
       criadoEm: admin.firestore.FieldValue.serverTimestamp()
     });
 
     // Pega o domínio atual da Vercel (garante que use HTTPS)
-    const domain = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL.replace(/^https?:\/\//, '')}` : 'https://casa-das-coxinhas-5f0c5.vercel.app';
+    const domain = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://casa-das-coxinhas.vercel.app';
 
     const payload = {
       reference_id: pedidoRef.id,
-      customer: { name: cliente.nome || "Cliente Casa das Coxinhas", email: "cliente@email.com", phone: { country: "55", area: "81", number: "999999999" } },
+      customer: { name: cliente.nome || "Cliente", email: "cliente@exemplo.com", phone: { country: "55", area: "81", number: "982116454" } },
       items: [{ reference_id: "PEDIDO_DELIVERY", name: "Pedido Casa das Coxinhas", quantity: 1, unit_amount: Math.round(resumo.total * 100) }],
-      notification_urls: [`${domain}/api/webhookPagBank`],
+      notification_urls: [domain.includes('localhost') ? 'https://webhook.site/seu-id' : `${domain}/api/webhookPagBank`],
       redirect_url: `${domain}/sucesso.html`,
       payment_methods: [{ type: cliente.metodo === 'pix_online' ? 'PIX' : 'CREDIT_CARD' }]
     };
@@ -85,12 +81,18 @@ module.exports = async (req, res) => {
       }
     });
 
-    const paymentUrl = response.data.links.find(l => l.rel === 'PAY').href;
-    await pedidoRef.update({ payment_url: paymentUrl });
+    const payLink = response.data.links.find(l => l.rel === 'PAY');
+    
+    if (!payLink) {
+      throw new Error("Link de pagamento não retornado pelo PagBank.");
+    }
+
+    const paymentUrl = payLink.href;
+    await pedidoRef.update({ payment_url: paymentUrl, pagbank_id: response.data.id });
 
     res.json({ url: paymentUrl });
   } catch (error) {
-    console.error("Erro PagBank:", error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Erro ao processar checkout' });
+    const errorDetail = error.response ? JSON.stringify(error.response.data) : error.message;
+    res.status(500).json({ error: 'Erro ao processar checkout', details: errorDetail });
   }
 };

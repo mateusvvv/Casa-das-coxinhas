@@ -3,25 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento Confirmado - Casa das Coxinhas</title>
+    <title>Pedido Confirmado - Casa das Coxinhas</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { text-align: center; padding: 50px; background: #1a1a1a; color: white; }
-        .success-card { background: #1e293b; padding: 40px; border-radius: 20px; border: 2px solid #16a34a; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #16a34a; margin-bottom: 20px; }
-        p { color: #cbd5e1; margin: 20px 0; line-height: 1.6; }
-        .btn-home { background: #FFA500; color: #000; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.2s; }
-        .btn-home:hover { transform: scale(1.05); }
+        .sucesso-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .check-icon {
+            font-size: 80px;
+            color: #16a34a;
+            margin-bottom: 20px;
+        }
+        .btn-voltar-home {
+            margin-top: 30px;
+            background: #FFA500;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="success-card">
-        <div style="font-size: 4em; margin-bottom: 20px;">✅</div>
-        <h1>Pedido Recebido!</h1>
-        <p>Seu pagamento foi processado. Se você pagou via <strong>Pix Online</strong>, o status do seu pedido no nosso sistema será atualizado automaticamente em alguns segundos.</p>
-        <p>Acompanhe as atualizações e a previsão de entrega diretamente pelo nosso WhatsApp.</p>
-        <br>
-        <a href="index.html" class="btn-home">Voltar para a Loja</a>
+    <div class="sucesso-container">
+        <div class="check-icon">✅</div>
+        <h1>Recebemos seu Pedido!</h1>
+        <p style="margin-top: 15px; color: #cbd5e1;">
+            Seu pagamento foi processado com sucesso.<br>
+            Agora é só aguardar! Em instantes nosso entregador sairá para levar suas coxinhas quentinhas.
+        </p>
+        
+        <div style="background: rgba(255,165,0,0.1); padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px dashed #FFA500;">
+            <p>Dúvidas? Chame a gente no Zap:</p>
+            <a href="https://wa.me/5581982116454" style="color: #FFA500; font-weight: bold;">(81) 98211-6454</a>
+        </div>
+
+        <a href="index.html" class="btn-voltar-home">Voltar para o Início</a>
     </div>
+    <script>localStorage.clear();</script>
 </body>
 </html>
