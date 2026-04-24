@@ -126,6 +126,7 @@ function aplicarAvailabilityData(data) {
       // Suporta tanto o formato antigo (boolean) quanto o novo (objeto)
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
+      produto.obsEstoque = typeof itemRemoto === 'object' ? (itemRemoto.obsEstoque || "") : "";
     }
   });
 
@@ -134,6 +135,7 @@ function aplicarAvailabilityData(data) {
     if (itemRemoto !== undefined) {
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
+      produto.obsEstoque = typeof itemRemoto === 'object' ? (itemRemoto.obsEstoque || "") : "";
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -145,6 +147,7 @@ function aplicarAvailabilityData(data) {
     if (itemRemoto !== undefined) {
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
+      produto.obsEstoque = typeof itemRemoto === 'object' ? (itemRemoto.obsEstoque || "") : "";
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -870,12 +873,10 @@ function atualizarAvisoEstoque(id) {
     // Se o cliente selecionar mais no contador, mostramos o que sobraria
     const restantes = Math.max(0, estoqueDisponivelReal - (qtdDesejada - 1));
     
-    // Personalização da mensagem para refrigerantes
+    // Personalização da mensagem (Manual pelo Admin)
     let textoAviso = `⚠️ Últimas ${restantes} unidades!`;
-    if (id === "refri-1l") {
-      textoAviso = `⚠️ Últimas ${restantes} unidades de Coca ou Guaraná!`;
-    } else if (id === "refri-lata") {
-      textoAviso = `⚠️ Últimas ${restantes} unidades de Coca, Fanta ou Guaraná!`;
+    if (produto.obsEstoque) {
+      textoAviso = `⚠️ Últimas ${restantes} unidades de ${produto.obsEstoque}!`;
     }
 
     aviso.innerHTML = textoAviso;
@@ -935,10 +936,14 @@ function atualizarPainelAdminPage() {
   }
 
   painelCardapio.innerHTML = produtosRegulares.map((produto) => `
-    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
-      <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
-      <label for="check-${produto.id}">${produto.nome}</label>
-      <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0" title="Quantidade em estoque">
+    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+      <div style="display: flex; align-items: center; width: 100%; gap: 12px;">
+        <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
+        <label for="check-${produto.id}" style="flex: 1;">${produto.nome}</label>
+        <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0" title="Estoque">
+      </div>
+      <input type="text" class="admin-obs-input" id="obs-${produto.id}" value="${produto.obsEstoque || ""}" 
+             placeholder="Sabores (ex: Coca ou Guaraná)">
     </div>
   `).join("");
 
@@ -1183,12 +1188,15 @@ async function salvarAvailability() {
   produtosRegulares.forEach((produto) => {
     const checkbox = document.getElementById(`check-${produto.id}`);
     const stockInput = document.getElementById(`stock-${produto.id}`);
+    const obsInput = document.getElementById(`obs-${produto.id}`);
     const isAvailable = checkbox ? checkbox.checked : produto.disponivel;
     const stockQty = stockInput ? parseInt(stockInput.value) : (produto.estoque || 0);
+    const obsText = obsInput ? obsInput.value.trim() : "";
     
-    data[produto.id] = { disponivel: isAvailable, estoque: stockQty };
+    data[produto.id] = { disponivel: isAvailable, estoque: stockQty, obsEstoque: obsText };
     produto.disponivel = isAvailable;
     produto.estoque = stockQty;
+    produto.obsEstoque = obsText;
   });
 
   produtosEventos.oleo.forEach((produto) => {
