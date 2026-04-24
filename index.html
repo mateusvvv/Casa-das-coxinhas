@@ -244,28 +244,59 @@
     <div class="categoria">
       <h2>Bebidas</h2>
       <div class="produtos-grid">
-        <div class="produto" data-product-id="refri-1l">
-          <h3>Refrigerante 1L</h3>
-          <p>Coca-Cola ou Guaraná</p>
+        <div class="produto" data-product-id="refri-1l-coca">
+          <h3>Coca-Cola 1L</h3>
           <div class="preco">R$ 9,00</div>
           <div class="quantidade-selector">
-            <button onclick="alterarQtd('refri-1l', -1)">−</button>
-            <span id="qtd-refri-1l">1</span>
-            <button onclick="alterarQtd('refri-1l', 1)">+</button>
+            <button onclick="alterarQtd('refri-1l-coca', -1)">−</button>
+            <span id="qtd-refri-1l-coca">1</span>
+            <button onclick="alterarQtd('refri-1l-coca', 1)">+</button>
           </div>
-          <button class="adicionar" onclick="abrirModalRefrigerante('1L', 9.00, 'refri-1l')">Adicionar ao Carrinho</button>
+          <button class="adicionar" onclick="add('Coca-Cola 1L', 9.00, 'refri-1l-coca')">Adicionar ao Carrinho</button>
         </div>
 
-        <div class="produto" data-product-id="refri-lata">
-          <h3>Refrigerante Lata</h3>
-          <p>Coca-Cola, Fanta ou Guaraná</p>
+        <div class="produto" data-product-id="refri-1l-guarana">
+          <h3>Guaraná 1L</h3>
+          <div class="preco">R$ 9,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('refri-1l-guarana', -1)">−</button>
+            <span id="qtd-refri-1l-guarana">1</span>
+            <button onclick="alterarQtd('refri-1l-guarana', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Guaraná 1L', 9.00, 'refri-1l-guarana')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto" data-product-id="refri-lata-coca">
+          <h3>Coca-Cola Lata</h3>
           <div class="preco">R$ 6,00</div>
           <div class="quantidade-selector">
-            <button onclick="alterarQtd('refri-lata', -1)">−</button>
-            <span id="qtd-refri-lata">1</span>
-            <button onclick="alterarQtd('refri-lata', 1)">+</button>
+            <button onclick="alterarQtd('refri-lata-coca', -1)">−</button>
+            <span id="qtd-refri-lata-coca">1</span>
+            <button onclick="alterarQtd('refri-lata-coca', 1)">+</button>
           </div>
-          <button class="adicionar" onclick="abrirModalRefrigerante('Lata', 6.00, 'refri-lata')">Adicionar ao Carrinho</button>
+          <button class="adicionar" onclick="add('Coca-Cola Lata', 6.00, 'refri-lata-coca')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto" data-product-id="refri-lata-fanta">
+          <h3>Fanta Lata</h3>
+          <div class="preco">R$ 6,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('refri-lata-fanta', -1)">−</button>
+            <span id="qtd-refri-lata-fanta">1</span>
+            <button onclick="alterarQtd('refri-lata-fanta', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Fanta Lata', 6.00, 'refri-lata-fanta')">Adicionar ao Carrinho</button>
+        </div>
+
+        <div class="produto" data-product-id="refri-lata-guarana">
+          <h3>Guaraná Lata</h3>
+          <div class="preco">R$ 6,00</div>
+          <div class="quantidade-selector">
+            <button onclick="alterarQtd('refri-lata-guarana', -1)">−</button>
+            <span id="qtd-refri-lata-guarana">1</span>
+            <button onclick="alterarQtd('refri-lata-guarana', 1)">+</button>
+          </div>
+          <button class="adicionar" onclick="add('Guaraná Lata', 6.00, 'refri-lata-guarana')">Adicionar ao Carrinho</button>
         </div>
       </div>
     </div>
@@ -449,27 +480,6 @@
     </div>
     <button class="btn-fechar-dev" onclick="fecharModalDev()">Entendido!</button>
     <p class="dev-footer-text">Orçamentos sem compromisso.</p>
-  </div>
-</div>
-
-<div id="modal-refrigerante" class="modal-overlay">
-  <div class="modal">
-    <h2>Escolher Refrigerante</h2>
-    
-    <div class="modal-group">
-      <label>Sabor:</label>
-      <select id="sabor-refri">
-        <option value="">-- Selecione --</option>
-        <option value="Coca-Cola">Coca-Cola</option>
-        <option value="Fanta">Fanta</option>
-        <option value="Guaraná">Guaraná</option>
-      </select>
-    </div>
-
-    <div class="modal-buttons">
-      <button class="btn-confirmar" onclick="confirmarRefrigerante()">Adicionar</button>
-      <button class="btn-cancelar" onclick="fecharModalRefrigerante()">Cancelar</button>
-    </div>
   </div>
 </div>
 

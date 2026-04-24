@@ -42,7 +42,6 @@ const TAXAS_CARTAO_CONFIG = {
 let bairroSelecionado = "";
 let localizacaoUsuario = "";
 let modoEntrega = "entrega";
-let refriTemp = { tamanho: "", preco: 0, id: "" };
 let formaPagamento = "";
 let availabilityUnsubscribe = null;
 let adminAutenticado = false;
@@ -68,8 +67,11 @@ const produtosRegulares = [
   { id: "hamburguer", nome: "Hamburguer", disponivel: true, estoque: 99 },
   { id: "x-tudo", nome: "X-Tudo", disponivel: true, estoque: 99 },
   { id: "cachorro-quente", nome: "Cachorro Quente", disponivel: true, estoque: 99 },
-  { id: "refri-1l", nome: "Refrigerante 1L", disponivel: true, estoque: 99 },
-  { id: "refri-lata", nome: "Refrigerante Lata", disponivel: true, estoque: 99 }
+  { id: "refri-1l-coca", nome: "Coca-Cola 1L", disponivel: true, estoque: 99 },
+  { id: "refri-1l-guarana", nome: "Guaraná 1L", disponivel: true, estoque: 99 },
+  { id: "refri-lata-coca", nome: "Coca-Cola Lata", disponivel: true, estoque: 99 },
+  { id: "refri-lata-fanta", nome: "Fanta Lata", disponivel: true, estoque: 99 },
+  { id: "refri-lata-guarana", nome: "Guaraná Lata", disponivel: true, estoque: 99 }
 ];
 
 function formatarMoeda(valor) {
@@ -126,7 +128,6 @@ function aplicarAvailabilityData(data) {
       // Suporta tanto o formato antigo (boolean) quanto o novo (objeto)
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
-      produto.obsEstoque = typeof itemRemoto === 'object' ? (itemRemoto.obsEstoque || "") : "";
     }
   });
 
@@ -135,7 +136,6 @@ function aplicarAvailabilityData(data) {
     if (itemRemoto !== undefined) {
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
-      produto.obsEstoque = typeof itemRemoto === 'object' ? (itemRemoto.obsEstoque || "") : "";
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -147,7 +147,6 @@ function aplicarAvailabilityData(data) {
     if (itemRemoto !== undefined) {
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
-      produto.obsEstoque = typeof itemRemoto === 'object' ? (itemRemoto.obsEstoque || "") : "";
       if (!produto.disponivel) {
         produto.selecionado = false;
       }
@@ -173,66 +172,6 @@ function atualizarStatusLojaUI() {
   statusTexto.forEach(el => el.innerText = text);
 
   atualizarEstadoFinalizar();
-}
-
-function abrirModalRefrigerante(tamanho, preco, id) {
-  if (!produtoEstaDisponivel(id)) {
-    alert("Este item está esgotado no momento.");
-    return;
-  }
-
-  refriTemp = { tamanho, preco, id };
-  document.getElementById("modal-refrigerante").classList.add("active");
-  
-  // Lógica para retirar Fanta de 1L
-  const selectSabor = document.getElementById("sabor-refri");
-  const fantaOption = selectSabor.querySelector('option[value="Fanta"]');
-  if (tamanho === "1L" && fantaOption) {
-    fantaOption.style.display = "none";
-  } else if (fantaOption) {
-    fantaOption.style.display = "block";
-  }
-
-  document.getElementById("sabor-refri").value = "";
-}
-
-function fecharModalRefrigerante() {
-  document.getElementById("modal-refrigerante").classList.remove("active");
-  document.getElementById("sabor-refri").value = "";
-}
-
-function confirmarRefrigerante() {
-  const sabor = document.getElementById("sabor-refri").value;
-
-  if (!sabor) {
-    alert("Por favor, selecione um sabor!");
-    return;
-  }
-
-  if (!produtoEstaDisponivel(refriTemp.id)) {
-    alert("Este item está esgotado no momento.");
-    fecharModalRefrigerante();
-    return;
-  }
-
-  const descricao = `Refrigerante ${refriTemp.tamanho} - ${sabor}`;
-  const qtd = refriTemp.tamanho === "1L" ? (quantidades["refri-1l"] || 1) : (quantidades["refri-lata"] || 1);
-
-  for (let i = 0; i < qtd; i++) {
-    carrinho.push({ nome: descricao, preco: refriTemp.preco, id: refriTemp.id });
-  }
-
-  if (refriTemp.tamanho === "1L") {
-    quantidades["refri-1l"] = 1;
-    document.getElementById("qtd-refri-1l").innerText = 1;
-  } else {
-    quantidades["refri-lata"] = 1;
-    document.getElementById("qtd-refri-lata").innerText = 1;
-  }
-
-  fecharModalRefrigerante();
-  atualizarAvisoEstoque(refriTemp.id);
-  render();
 }
 
 function abrirModalPastel() {
@@ -326,16 +265,6 @@ function confirmarCachorro() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  const modalRefrigerante = document.getElementById("modal-refrigerante");
-  const modalPastel = document.getElementById("modal-pastel");
-
-  if (modalRefrigerante) {
-    modalRefrigerante.addEventListener("click", function(e) {
-      if (e.target === this) {
-        fecharModalRefrigerante();
-      }
-    });
-  }
 
   if (modalPastel) {
     modalPastel.addEventListener("click", function(e) {
@@ -872,14 +801,7 @@ function atualizarAvisoEstoque(id) {
     }
     // Se o cliente selecionar mais no contador, mostramos o que sobraria
     const restantes = Math.max(0, estoqueDisponivelReal - (qtdDesejada - 1));
-    
-    // Personalização da mensagem (Manual pelo Admin)
-    let textoAviso = `⚠️ Últimas ${restantes} unidades!`;
-    if (produto.obsEstoque) {
-      textoAviso = `⚠️ Últimas ${restantes} unidades de ${produto.obsEstoque}!`;
-    }
-
-    aviso.innerHTML = textoAviso;
+    aviso.innerHTML = `⚠️ Últimas ${restantes} unidades!`;
   } else if (aviso) {
     aviso.remove();
   }
@@ -936,14 +858,10 @@ function atualizarPainelAdminPage() {
   }
 
   painelCardapio.innerHTML = produtosRegulares.map((produto) => `
-    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}" style="flex-direction: column; align-items: flex-start; gap: 5px;">
-      <div style="display: flex; align-items: center; width: 100%; gap: 12px;">
-        <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
-        <label for="check-${produto.id}" style="flex: 1;">${produto.nome}</label>
-        <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0" title="Estoque">
-      </div>
-      <input type="text" class="admin-obs-input" id="obs-${produto.id}" value="${produto.obsEstoque || ""}" 
-             placeholder="Sabores (ex: Coca ou Guaraná)">
+    <div class="painel-produto ${produto.disponivel ? "" : "indisponivel"}">
+      <input type="checkbox" id="check-${produto.id}" ${produto.disponivel ? "checked" : ""}>
+      <label for="check-${produto.id}" style="flex: 1;">${produto.nome}</label>
+      <input type="number" class="admin-stock-input" id="stock-${produto.id}" value="${produto.estoque || 0}" min="0" title="Estoque">
     </div>
   `).join("");
 
@@ -1188,15 +1106,11 @@ async function salvarAvailability() {
   produtosRegulares.forEach((produto) => {
     const checkbox = document.getElementById(`check-${produto.id}`);
     const stockInput = document.getElementById(`stock-${produto.id}`);
-    const obsInput = document.getElementById(`obs-${produto.id}`);
     const isAvailable = checkbox ? checkbox.checked : produto.disponivel;
     const stockQty = stockInput ? parseInt(stockInput.value) : (produto.estoque || 0);
-    const obsText = obsInput ? obsInput.value.trim() : "";
-    
-    data[produto.id] = { disponivel: isAvailable, estoque: stockQty, obsEstoque: obsText };
+    data[produto.id] = { disponivel: isAvailable, estoque: stockQty };
     produto.disponivel = isAvailable;
     produto.estoque = stockQty;
-    produto.obsEstoque = obsText;
   });
 
   produtosEventos.oleo.forEach((produto) => {

@@ -1503,15 +1503,6 @@ footer {
   margin-bottom:10px;
 }
 
-.produto p{
-  min-height:42px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  margin-bottom:12px;
-}
-
 .preco{
   margin-bottom:14px;
   text-align:center;
@@ -1654,18 +1645,6 @@ button.adicionar{
   border-radius: 4px;
   text-align: center;
   font-weight: bold;
-}
-
-/* ESTILO PARA INPUT DE OBSERVAÇÃO DE ESTOQUE NO ADMIN */
-.admin-obs-input {
-  width: 100% !important;
-  padding: 6px 10px !important;
-  margin-top: 5px;
-  border: 1px solid #334155 !important;
-  background: #0f172a !important;
-  color: #FFB81C !important;
-  border-radius: 6px;
-  font-size: 0.85em;
 }
 
 /* ESTILIZAÇÃO DO MODAL DO DESENVOLVEDOR */
