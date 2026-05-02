@@ -987,7 +987,7 @@ function criarCardEvento(produto, tipo) {
   return `
     <div class="produto ${produto.quantidade > 0 ? "selecionado" : ""} ${bloqueado ? "indisponivel" : ""}">
       <h3>${produto.nome}</h3>
-      <p>${bloqueado ? "ITEM ESGOTADO" : "Escolha a quantidade para o seu pedido"}</p>
+      ${bloqueado ? '<p>ITEM ESGOTADO</p>' : ''}
       <div class="quantidade-selector" style="justify-content: center;">
         <button onclick="alterarQtdEvento('${tipo}', '${produto.id}', -1)" ${bloqueado ? 'disabled' : ''}>-</button>
         <span style="min-width: 30px;">${produto.quantidade}</span>
