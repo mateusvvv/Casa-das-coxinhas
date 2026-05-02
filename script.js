@@ -137,7 +137,7 @@ function aplicarAvailabilityData(data) {
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
       if (!produto.disponivel) {
-        produto.selecionado = false;
+        produto.quantidade = 0;
       }
     }
   });
@@ -148,13 +148,13 @@ function aplicarAvailabilityData(data) {
       produto.disponivel = typeof itemRemoto === 'object' ? !!itemRemoto.disponivel : !!itemRemoto;
       produto.estoque = typeof itemRemoto === 'object' ? (parseInt(itemRemoto.estoque) || 0) : 99;
       if (!produto.disponivel) {
-        produto.selecionado = false;
+        produto.quantidade = 0;
       }
     }
   });
 
-  produtosEventos.salgadosSelecionadosOleo = produtosEventos.oleo.filter((item) => item.selecionado).length;
-  produtosEventos.salgadosSelecionadosForno = produtosEventos.forno.filter((item) => item.selecionado).length;
+  produtosEventos.salgadosSelecionadosOleo = produtosEventos.oleo.reduce((sum, item) => sum + (item.quantidade || 0), 0);
+  produtosEventos.salgadosSelecionadosForno = produtosEventos.forno.reduce((sum, item) => sum + (item.quantidade || 0), 0);
 
   aplicarDisponibilidadeCardapioRegular();
   atualizarPaginaEventos();
@@ -765,23 +765,23 @@ function finalizar() {
 // Dados de Eventos
 const produtosEventos = {
   oleo: [
-    { id: 'coxinha', nome: 'Coxinha', disponivel: true, selecionado: false },
-    { id: 'risole', nome: 'Risole', disponivel: true, selecionado: false },
-    { id: 'bolinho-carne-ev', nome: 'Bolinho de Carne', disponivel: true, selecionado: false },
-    { id: 'bolinho-pizza-ev', nome: 'Bolinho de Pizza', disponivel: true, selecionado: false },
-    { id: 'bolinha-queijo', nome: 'Bolinha de Queijo', disponivel: true, selecionado: false },
-    { id: 'pastelzinho', nome: 'Pastelzinho', disponivel: true, selecionado: false },
-    { id: 'enroladinho-ev', nome: 'Enroladinho', disponivel: true, selecionado: false },
-    { id: 'pastel-pernambucano', nome: 'Pastel Pernambucano', disponivel: true, selecionado: false }
+    { id: 'coxinha', nome: 'Coxinha', disponivel: true, quantidade: 0 },
+    { id: 'risole', nome: 'Risole', disponivel: true, quantidade: 0 },
+    { id: 'bolinho-carne-ev', nome: 'Bolinho de Carne', disponivel: true, quantidade: 0 },
+    { id: 'bolinho-pizza-ev', nome: 'Bolinho de Pizza', disponivel: true, quantidade: 0 },
+    { id: 'bolinha-queijo', nome: 'Bolinha de Queijo', disponivel: true, quantidade: 0 },
+    { id: 'pastelzinho', nome: 'Pastelzinho', disponivel: true, quantidade: 0 },
+    { id: 'enroladinho-ev', nome: 'Enroladinho', disponivel: true, quantidade: 0 },
+    { id: 'pastel-pernambucano', nome: 'Pastel Pernambucano', disponivel: true, quantidade: 0 }
   ],
   forno: [
-    { id: 'pastelzinho-forno', nome: 'Pastelzinho', disponivel: true, selecionado: false },
-    { id: 'bolinha-queijo-forno', nome: 'Bolinha de Queijo', disponivel: true, selecionado: false },
-    { id: 'tortilete', nome: 'Tortilete', disponivel: true, selecionado: false },
-    { id: 'canudinho', nome: 'Canudinho', disponivel: true, selecionado: false },
-    { id: 'empada', nome: 'Empada', disponivel: true, selecionado: false },
-    { id: 'enroladinho-forno', nome: 'Enroladinho', disponivel: true, selecionado: false },
-    { id: 'esfirra', nome: 'Esfirra', disponivel: true, selecionado: false }
+    { id: 'pastelzinho-forno', nome: 'Pastelzinho', disponivel: true, quantidade: 0 },
+    { id: 'bolinha-queijo-forno', nome: 'Bolinha de Queijo', disponivel: true, quantidade: 0 },
+    { id: 'tortilete', nome: 'Tortilete', disponivel: true, quantidade: 0 },
+    { id: 'canudinho', nome: 'Canudinho', disponivel: true, quantidade: 0 },
+    { id: 'empada', nome: 'Empada', disponivel: true, quantidade: 0 },
+    { id: 'enroladinho-forno', nome: 'Enroladinho', disponivel: true, quantidade: 0 },
+    { id: 'esfirra', nome: 'Esfirra', disponivel: true, quantidade: 0 }
   ],
   salgadosSelecionadosOleo: 0,
   salgadosSelecionadosForno: 0
@@ -939,17 +939,15 @@ function obterConfiguracaoEvento(tipo) {
   if (tipo === "oleo") {
     return {
       titulo: "Cardápio de Eventos - Óleo",
-      preco: 45.00,
-      limite: 3,
-      quantidade: 100
+      precoUnitario: 0.45,
+      minimo: 50
     };
   }
 
   return {
     titulo: "Cardápio de Eventos - Forno",
-    preco: 50.00,
-    limite: 2,
-    quantidade: 100
+    precoUnitario: 0.50,
+    minimo: 50
   };
 }
 
@@ -959,9 +957,12 @@ function atualizarContadorEventos() {
   const btnOleo = document.getElementById("btn-add-oleo");
   const btnForno = document.getElementById("btn-add-forno");
 
+  const configOleo = obterConfiguracaoEvento("oleo");
+  const configForno = obterConfiguracaoEvento("forno");
+
   if (contadorOleo) {
-    contadorOleo.innerText = `Selecionados: ${produtosEventos.salgadosSelecionadosOleo}/3`;
-    const completo = produtosEventos.salgadosSelecionadosOleo === 3;
+    contadorOleo.innerText = `Total: ${produtosEventos.salgadosSelecionadosOleo} unidades (Mínimo ${configOleo.minimo})`;
+    const completo = produtosEventos.salgadosSelecionadosOleo >= configOleo.minimo;
     contadorOleo.classList.toggle("completo", completo);
     if (btnOleo) {
       btnOleo.disabled = !completo;
@@ -970,8 +971,8 @@ function atualizarContadorEventos() {
   }
 
   if (contadorForno) {
-    contadorForno.innerText = `Selecionados: ${produtosEventos.salgadosSelecionadosForno}/2`;
-    const completo = produtosEventos.salgadosSelecionadosForno === 2;
+    contadorForno.innerText = `Total: ${produtosEventos.salgadosSelecionadosForno} unidades (Mínimo ${configForno.minimo})`;
+    const completo = produtosEventos.salgadosSelecionadosForno >= configForno.minimo;
     contadorForno.classList.toggle("completo", completo);
     if (btnForno) {
       btnForno.disabled = !completo;
@@ -984,19 +985,18 @@ function criarCardEvento(produto, tipo) {
   const bloqueado = !produto.disponivel;
 
   return `
-    <div class="produto ${produto.selecionado ? "selecionado" : ""} ${bloqueado ? "indisponivel" : ""}">
+    <div class="produto ${produto.quantidade > 0 ? "selecionado" : ""} ${bloqueado ? "indisponivel" : ""}">
       <h3>${produto.nome}</h3>
-      <p>${bloqueado ? "ITEM ESGOTADO" : "Disponível para compor seu cardápio de 100 unidades"}</p>
-      <label class="checkbox-salgado">
-        <input
-          type="checkbox"
-          ${produto.selecionado ? "checked" : ""}
-          ${bloqueado ? "disabled" : ""}
-          onchange="toggleSelecaoEvento('${tipo}', '${produto.id}')"
-        >
-        <span class="checkbox-custom"></span>
-        <span>${bloqueado ? "ITEM ESGOTADO" : "Selecionar este sabor"}</span>
-      </label>
+      <p>${bloqueado ? "ITEM ESGOTADO" : "Escolha a quantidade para o seu pedido"}</p>
+      <div class="quantidade-selector" style="justify-content: center;">
+        <button onclick="alterarQtdEvento('${tipo}', '${produto.id}', -1)" ${bloqueado ? 'disabled' : ''}>-</button>
+        <span style="min-width: 30px;">${produto.quantidade}</span>
+        <button onclick="alterarQtdEvento('${tipo}', '${produto.id}', 1)" ${bloqueado ? 'disabled' : ''}>+</button>
+      </div>
+      <div class="quantidade-selector" style="justify-content: center; margin-top: 5px; background: transparent; padding: 0;">
+        <button onclick="alterarQtdEvento('${tipo}', '${produto.id}', -10)" style="width: 45px;" ${bloqueado ? 'disabled' : ''}>-10</button>
+        <button onclick="alterarQtdEvento('${tipo}', '${produto.id}', 10)" style="width: 45px;" ${bloqueado ? 'disabled' : ''}>+10</button>
+      </div>
     </div>
   `;
 }
@@ -1015,7 +1015,7 @@ function atualizarPaginaEventos() {
   atualizarContadorEventos();
 }
 
-function toggleSelecaoEvento(tipo, id) {
+function alterarQtdEvento(tipo, id, valor) {
   const lista = produtosEventos[tipo];
   const produto = lista.find((item) => item.id === id);
 
@@ -1023,33 +1023,30 @@ function toggleSelecaoEvento(tipo, id) {
     return;
   }
 
-  const config = obterConfiguracaoEvento(tipo);
   const chaveContador = tipo === "oleo" ? "salgadosSelecionadosOleo" : "salgadosSelecionadosForno";
-  const totalSelecionado = produtosEventos[chaveContador];
 
-  if (!produto.selecionado && totalSelecionado >= config.limite) {
-    alert(`Você pode selecionar apenas ${config.limite} tipos no cardápio ${tipo === "oleo" ? "de óleo" : "de forno"}.`);
-    atualizarPaginaEventos();
-    return;
-  }
+  let novaQtd = produto.quantidade + valor;
+  if (novaQtd < 0) novaQtd = 0;
 
-  produto.selecionado = !produto.selecionado;
-  produtosEventos[chaveContador] = lista.filter((item) => item.selecionado).length;
+  produto.quantidade = novaQtd;
+  produtosEventos[chaveContador] = lista.reduce((sum, item) => sum + item.quantidade, 0);
+  
   atualizarPaginaEventos();
 }
 
 function obterDescricaoComboEvento(tipo) {
   const config = obterConfiguracaoEvento(tipo);
+  const total = produtosEventos[tipo === "oleo" ? "salgadosSelecionadosOleo" : "salgadosSelecionadosForno"];
   const selecionados = produtosEventos[tipo]
-    .filter((item) => item.selecionado)
-    .map((item) => item.nome);
+    .filter((item) => item.quantidade > 0)
+    .map((item) => `${item.quantidade}x ${item.nome}`);
 
-  return `${config.titulo} - ${config.quantidade} unidades (${selecionados.join(", ")})`;
+  return `${config.titulo} - Total: ${total} unidades (${selecionados.join(", ")})`;
 }
 
 function limparSelecaoEventos(tipo) {
   produtosEventos[tipo].forEach((item) => {
-    item.selecionado = false;
+    item.quantidade = 0;
   });
 
   if (tipo === "oleo") {
@@ -1061,16 +1058,16 @@ function limparSelecaoEventos(tipo) {
 
 function adicionarComboEvento(tipo) {
   const config = obterConfiguracaoEvento(tipo);
-  const selecionados = produtosEventos[tipo].filter((item) => item.selecionado);
+  const total = produtosEventos[tipo === "oleo" ? "salgadosSelecionadosOleo" : "salgadosSelecionadosForno"];
 
-  if (selecionados.length !== config.limite) {
-    alert(`Selecione exatamente ${config.limite} tipos para adicionar o cardápio ${tipo === "oleo" ? "de óleo" : "de forno"} ao carrinho.`);
+  if (total < config.minimo) {
+    alert(`O pedido mínimo é de ${config.minimo} unidades. (Atual: ${total})`);
     return;
   }
 
   carrinho.push({
     nome: obterDescricaoComboEvento(tipo),
-    preco: config.preco
+    preco: total * config.precoUnitario
   });
 
   limparSelecaoEventos(tipo);
@@ -1079,11 +1076,11 @@ function adicionarComboEvento(tipo) {
 }
 
 function finalizarEventos() {
-  const selecaoPendente =
-    produtosEventos.oleo.some((item) => item.selecionado) ||
-    produtosEventos.forno.some((item) => item.selecionado);
+  const totalPendente =
+    produtosEventos.salgadosSelecionadosOleo > 0 ||
+    produtosEventos.salgadosSelecionadosForno > 0;
 
-  if (selecaoPendente && carrinho.length === 0) {
+  if (totalPendente && carrinho.length === 0) {
     alert("Adicione primeiro o cardápio de eventos ao carrinho antes de finalizar o pedido.");
     return;
   }
