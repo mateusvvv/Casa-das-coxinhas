@@ -41,7 +41,7 @@ const TAXAS_CARTAO_CONFIG = {
 };
 let bairroSelecionado = "";
 let localizacaoUsuario = "";
-let modoEntrega = "entrega";
+let modoEntrega = "";
 let formaPagamento = "";
 let availabilityUnsubscribe = null;
 let adminAutenticado = false;
@@ -368,6 +368,9 @@ function toggleCarrinho(abrir) {
     if (overlay) overlay.classList.add("active");
     document.body.style.overflow = "hidden"; // Trava o scroll da página de fundo
     cart.scrollTop = 0; // Reseta o scroll do carrinho para o topo
+    
+    // Sincroniza o modo de entrega e exibe agendamento se for evento ao abrir o carrinho
+    atualizarModoEntrega();
   } else {
     cart.classList.remove("active");
     if (overlay) overlay.classList.remove("active");
@@ -420,18 +423,64 @@ function atualizarEstadoFinalizar() {
   const agendamentoOK = isPaginaEventos ? (diaRetirada && horaRetirada) : true;
 
   const retiradaValida = modoEntrega === "retirada" && agendamentoOK;
-  const entregaValida = modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido;
+  const entregaValida = modoEntrega === "entrega" && bairroSelecionado && numeroPreenchido && agendamentoOK;
 
   botaoFinalizar.disabled = !lojaAberta || carrinho.length === 0 || !nomePreenchido || !(retiradaValida || entregaValida) || !formaPagamento;
 }
 
+function selecionarModo(valor) {
+  const input = document.getElementById("modo-entrega");
+  if (input) {
+    input.value = valor;
+    atualizarModoEntrega();
+  }
+}
+
 function atualizarModoEntrega() {
-  modoEntrega = document.getElementById("modo-entrega").value;
+  const input = document.getElementById("modo-entrega");
+  if (!input) return;
+  modoEntrega = input.value;
+
+  // Atualiza botões
+  const btnEntrega = document.getElementById("btn-modo-entrega");
+  const btnRetirada = document.getElementById("btn-modo-retirada");
+  if (btnEntrega) btnEntrega.classList.toggle("active", modoEntrega === "entrega");
+  if (btnRetirada) btnRetirada.classList.toggle("active", modoEntrega === "retirada");
+
   const bairroSection = document.getElementById("bairro-section");
   const numeroCasaSection = document.getElementById("numero-casa-section");
   const pontoReferenciaSection = document.getElementById("ponto-referencia-section");
   const retiradaInfoSection = document.getElementById("retirada-info");
   const localizacaoSection = document.getElementById("localizacao-section");
+  const isPaginaEventos = !!document.getElementById("grid-oleo");
+
+  // Atualiza o texto do botão e do título do modal conforme o modo
+  const btnAgendar = document.querySelector("#retirada-display-box .btn-agendar-retirada");
+  const modalTitulo = document.querySelector("#modal-retirada h2");
+  if (btnAgendar) {
+    btnAgendar.innerHTML = modoEntrega === "entrega" ? "📅 Agendar Entrega" : "📅 Agendar Retirada";
+  }
+  if (modalTitulo) {
+    modalTitulo.innerText = modoEntrega === "entrega" ? "Agendar Entrega" : "Agendar Retirada";
+  }
+
+  const labelsModal = document.querySelectorAll("#modal-retirada label");
+  labelsModal.forEach(label => {
+    if (modoEntrega === "entrega") {
+      label.innerText = label.innerText.replace("retirada", "entrega").replace("Retirada", "Entrega");
+    } else {
+      label.innerText = label.innerText.replace("entrega", "retirada").replace("Entrega", "Retirada");
+    }
+  });
+
+  if (!modoEntrega) {
+    if (bairroSection) bairroSection.hidden = true;
+    if (numeroCasaSection) numeroCasaSection.hidden = true;
+    if (pontoReferenciaSection) pontoReferenciaSection.hidden = true;
+    if (localizacaoSection) localizacaoSection.hidden = true;
+    if (retiradaInfoSection) retiradaInfoSection.hidden = true;
+    return;
+  }
 
   if (modoEntrega === "retirada") {
     bairroSelecionado = "";
@@ -441,18 +490,37 @@ function atualizarModoEntrega() {
     pontoReferenciaSection.hidden = true;
     if (localizacaoSection) localizacaoSection.hidden = true;
     retiradaInfoSection.hidden = false;
-    
-    // Só abre o modal de agendamento se for a página de eventos
-    const isPaginaEventos = !!document.getElementById("grid-oleo");
-    if (isPaginaEventos) {
-      abrirModalRetirada();
+
+    if (retiradaInfoSection) {
+      // Mostrar endereço físico
+      const enderecoDivs = retiradaInfoSection.querySelectorAll("div:not(#retirada-display-box)");
+      enderecoDivs.forEach(div => div.style.display = "block");
+      const labelModo = document.getElementById("retirada-label");
+      if (labelModo) labelModo.innerText = "Retirada no estabelecimento:";
+
+      if (isPaginaEventos) {
+        abrirModalRetirada();
+      }
     }
   } else {
     bairroSection.hidden = false;
     numeroCasaSection.hidden = false;
     pontoReferenciaSection.hidden = false;
     if (localizacaoSection) localizacaoSection.hidden = false;
-    retiradaInfoSection.hidden = true;
+
+    if (retiradaInfoSection) {
+      // Se for evento, mostra o agendamento mesmo para entrega
+      retiradaInfoSection.hidden = !isPaginaEventos;
+      if (isPaginaEventos) {
+        // Esconder endereço físico no modo entrega para eventos
+        const enderecoDivs = retiradaInfoSection.querySelectorAll("div:not(#retirada-display-box)");
+        enderecoDivs.forEach(div => div.style.display = "none");
+        const labelModo = document.getElementById("retirada-label");
+        if (labelModo) labelModo.innerText = "Agendamento da Entrega:";
+        
+        abrirModalRetirada();
+      }
+    }
   }
   render();
   atualizarEstadoFinalizar();
@@ -473,9 +541,11 @@ function confirmarModalRetirada() {
   const hora = document.getElementById("retirada-horario").value.trim();
 
   const status = document.getElementById("retirada-status");
+  const label = modoEntrega === "entrega" ? "Entrega" : "Retirada";
+
   if (status) {
     if (dia && hora) {
-      status.innerHTML = `<strong>Agendado para:</strong><br>${dia} às ${hora}`;
+      status.innerHTML = `<strong>${label} agendada para:</strong><br>${dia} às ${hora}`;
       status.style.color = "#FFB81C";
     } else {
       status.innerText = "Nenhum horário selecionado";
@@ -727,6 +797,15 @@ function finalizar() {
     if (pontoReferencia) {
       msg += `Referência: ${pontoReferencia}\n`;
     }
+
+    const temEvento = carrinho.some(item => item.nome.includes("Cardápio de Eventos"));
+    if (temEvento) {
+      const dia = document.getElementById("retirada-dia")?.value.trim();
+      const hora = document.getElementById("retirada-horario")?.value.trim();
+      if (dia) msg += `Data da Entrega: ${dia}\n`;
+      if (hora) msg += `Horário da Entrega: ${hora}\n`;
+    }
+
     if (localizacaoUsuario) {
       msg += `📍 Localização GPS: ${localizacaoUsuario}\n`;
     }

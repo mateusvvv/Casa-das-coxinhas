@@ -1763,6 +1763,47 @@ button.adicionar{
   to { text-shadow: 0 0 15px #ef4444, 0 0 25px #ef4444; }
 }
 
+/* MODO ENTREGA / RETIRADA */
+.modo-entrega-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.btn-modo {
+  flex: 1;
+  padding: 18px 10px;
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 12px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9em;
+}
+
+.btn-modo span {
+  font-size: 1.8em;
+  transition: transform 0.3s;
+}
+
+.btn-modo.active {
+  border-color: #FFA500;
+  background: rgba(255, 165, 0, 0.1);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-modo.active span {
+  transform: scale(1.1);
+}
+
 /* AVISO DE ESTOQUE BAIXO NO CARDÁPIO */
 .aviso-estoque {
   background: rgba(255, 165, 0, 0.2);
