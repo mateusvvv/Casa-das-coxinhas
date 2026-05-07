@@ -1121,6 +1121,7 @@ button.finalizar:disabled {
   cursor: pointer;
   color: #e2e8f0;
   font-weight: 500;
+  word-break: break-word;
 }
 
 .painel-admin-footer {
@@ -1360,7 +1361,7 @@ button.finalizar:disabled {
 
 .painel-produtos-page {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 15px;
 }
 
@@ -1428,7 +1429,7 @@ button.finalizar:disabled {
   }
   
   .painel-produtos-page {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1599,6 +1600,7 @@ button.adicionar{
   .produto,
   .item-produto,
   .produto-admin,
+  .painel-produto,
   .lista-produtos li {
     width: 100%;
     max-width: 100%;
